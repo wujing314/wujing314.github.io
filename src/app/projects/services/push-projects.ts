@@ -2,6 +2,7 @@ import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, 
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { getAuthToken } from '@/lib/auth'
 import { GITHUB_CONFIG } from '@/consts'
+import { saveToLocalStorage } from '@/lib/local-storage'
 import type { Project } from '../components/project-card'
 import type { ImageItem } from '../components/image-upload-dialog'
 import { getFileExt } from '@/lib/utils'
@@ -12,7 +13,7 @@ export type PushProjectsParams = {
 	imageItems?: Map<string, ImageItem>
 }
 
-export async function pushProjects(params: PushProjectsParams): Promise<void> {
+async function pushProjectsOnline(params: PushProjectsParams): Promise<void> {
 	const { projects, imageItems } = params
 
 	const token = await getAuthToken()
@@ -77,3 +78,32 @@ export async function pushProjects(params: PushProjectsParams): Promise<void> {
 	toast.success('发布成功！')
 }
 
+async function pushProjectsOffline(params: PushProjectsParams): Promise<void> {
+	const { projects, imageItems } = params
+
+	toast.info('正在保存到本地...')
+
+	let updatedProjects = [...projects]
+
+	if (imageItems && imageItems.size > 0) {
+		toast.info('正在处理图片...')
+		for (const [url, imageItem] of imageItems.entries()) {
+			if (imageItem.type === 'file') {
+				const contentBase64 = await fileToBase64NoPrefix(imageItem.file)
+				const dataUrl = `data:image/${getFileExt(imageItem.file.name).slice(1)};base64,${contentBase64}`
+				updatedProjects = updatedProjects.map(p => (p.url === url ? { ...p, image: dataUrl } : p))
+			}
+		}
+	}
+
+	saveToLocalStorage('projects', updatedProjects)
+	toast.success('已保存到本地！')
+}
+
+export async function pushProjects(params: PushProjectsParams): Promise<void> {
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		await pushProjectsOffline(params)
+	} else {
+		await pushProjectsOnline(params)
+	}
+}

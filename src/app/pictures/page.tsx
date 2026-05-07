@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { toast } from 'sonner'
 import initialList from './list.json'
 import { RandomLayout } from './components/random-layout'
 import UploadDialog from './components/upload-dialog'
 import { pushPictures } from './services/push-pictures'
-import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
+import { loadFromLocalStorage } from '@/lib/local-storage'
+import { GITHUB_CONFIG } from '@/consts'
 import type { ImageItem } from '../projects/components/image-upload-dialog'
 import { useRouter } from 'next/navigation'
 
@@ -20,17 +21,24 @@ export interface Picture {
 	images?: string[]
 }
 
+const loadPictures = (): Picture[] => {
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		const savedData = loadFromLocalStorage<Picture[]>('pictures', null)
+		return savedData || initialList
+	}
+	return initialList
+}
+
 export default function Page() {
-	const [pictures, setPictures] = useState<Picture[]>(initialList as Picture[])
-	const [originalPictures, setOriginalPictures] = useState<Picture[]>(initialList as Picture[])
+	const loadedPictures = loadPictures()
+	const [pictures, setPictures] = useState<Picture[]>(loadedPictures)
+	const [originalPictures, setOriginalPictures] = useState<Picture[]>(loadedPictures)
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
 	const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
 	const [imageItems, setImageItems] = useState<Map<string, ImageItem>>(new Map())
-	const keyInputRef = useRef<HTMLInputElement>(null)
 	const router = useRouter()
 
-	const { isAuth, setPrivateKey } = useAuthStore()
 	const { siteContent } = useConfigStore()
 	const hideEditButton = siteContent.hideEditButton ?? false
 
@@ -73,15 +81,12 @@ export default function Page() {
 				.map(picture => {
 					if (picture.id !== pictureId) return picture
 
-					// 如果是 single image，删除整个 Picture
 					if (imageIndex === 'single') {
 						return null
 					}
 
-					// 如果是 images 数组中的图片
 					if (picture.images && picture.images.length > 0) {
 						const newImages = picture.images.filter((_, idx) => idx !== imageIndex)
-						// 如果删除后数组为空，删除整个 Picture
 						if (newImages.length === 0) {
 							return null
 						}
@@ -96,22 +101,17 @@ export default function Page() {
 				.filter((p): p is Picture => p !== null)
 		})
 
-		// 更新 imageItems Map
 		setImageItems(prev => {
 			const next = new Map(prev)
 			if (imageIndex === 'single') {
-				// 删除所有相关的文件项
 				for (const key of next.keys()) {
 					if (key.startsWith(`${pictureId}::`)) {
 						next.delete(key)
 					}
 				}
 			} else {
-				// 删除特定索引的文件项
 				next.delete(`${pictureId}::${imageIndex}`)
 				
-				// 重新索引：删除索引 imageIndex 后，后面的索引需要前移
-				// 例如：删除索引 1，原来的索引 2 变成 1，索引 3 变成 2
 				const keysToUpdate: Array<{ oldKey: string; newKey: string }> = []
 				for (const key of next.keys()) {
 					if (key.startsWith(`${pictureId}::`)) {
@@ -127,7 +127,6 @@ export default function Page() {
 					}
 				}
 				
-				// 执行重新索引
 				for (const { oldKey, newKey } of keysToUpdate) {
 					const value = next.get(oldKey)
 					if (value) {
@@ -155,23 +154,8 @@ export default function Page() {
 		})
 	}
 
-	const handleChoosePrivateKey = async (file: File) => {
-		try {
-			const text = await file.text()
-			setPrivateKey(text)
-			await handleSave()
-		} catch (error) {
-			console.error('Failed to read private key:', error)
-			toast.error('读取密钥文件失败')
-		}
-	}
-
 	const handleSaveClick = () => {
-		if (!isAuth) {
-			keyInputRef.current?.click()
-		} else {
-			handleSave()
-		}
+		void handleSave()
 	}
 
 	const handleSave = async () => {
@@ -201,7 +185,7 @@ export default function Page() {
 		setIsEditMode(false)
 	}
 
-	const buttonText = isAuth ? '保存' : '导入密钥'
+	const buttonText = '保存'
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -219,18 +203,6 @@ export default function Page() {
 
 	return (
 		<>
-			<input
-				ref={keyInputRef}
-				type='file'
-				accept='.pem'
-				className='hidden'
-				onChange={async e => {
-					const f = e.target.files?.[0]
-					if (f) await handleChoosePrivateKey(f)
-					if (e.currentTarget) e.currentTarget.value = ''
-				}}
-			/>
-
 			<RandomLayout pictures={pictures} isEditMode={isEditMode} onDeleteSingle={handleDeleteSingleImage} onDeleteGroup={handleDeleteGroup} />
 
 			{pictures.length === 0 && (

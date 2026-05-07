@@ -1,5 +1,7 @@
 import useSWR from 'swr'
-import { useAuthStore } from '@/hooks/use-auth'
+import { useEffect, useState } from 'react'
+import { GITHUB_CONFIG } from '@/consts'
+import { loadFromLocalStorage } from '@/lib/local-storage'
 import type { BlogIndexItem } from '@/app/blog/types'
 
 export type { BlogIndexItem } from '@/app/blog/types'
@@ -17,19 +19,23 @@ const fetcher = async (url: string) => {
 }
 
 export function useBlogIndex() {
-	const { isAuth } = useAuthStore()
-	const { data, error, isLoading } = useSWR<BlogIndexItem[]>('/blogs/index.json', fetcher, {
+	const [localItems, setLocalItems] = useState<BlogIndexItem[] | null>(null)
+	const { data: remoteItems, error, isLoading } = useSWR<BlogIndexItem[]>('/blogs/index.json', fetcher, {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: true
 	})
 
-	let result = data || []
-	if (!isAuth) {
-		result = result.filter(item => !item.hidden)
-	}
+	useEffect(() => {
+		if (GITHUB_CONFIG.OFFLINE_MODE) {
+			const savedItems = loadFromLocalStorage<BlogIndexItem[]>('blogItems', null)
+			setLocalItems(savedItems)
+		}
+	}, [])
+
+	const items = GITHUB_CONFIG.OFFLINE_MODE && localItems ? localItems : (remoteItems || [])
 
 	return {
-		items: result,
+		items,
 		loading: isLoading,
 		error
 	}

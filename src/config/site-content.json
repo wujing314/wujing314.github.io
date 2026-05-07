@@ -1,23 +1,23 @@
 {
 	"meta": {
-		"title": "YYsuni",
-		"description": "YYsuni 的个人博客，记录前端开发、探索、笔记。前端 UI 更新代码仓库。",
-		"username": "Suni"
+		"title": "吴晶",
+		"description": "吴晶的个人主页，记录生活点滴与技术思考。",
+		"username": "吴晶"
 	},
 	"theme": {
-		"colorBrand": "#2fcbe7",
-		"colorPrimary": "#5B423F",
-		"colorSecondary": "#8b7667",
-		"colorBrandSecondary": "#eec25e",
-		"colorBg": "#d4e8f3",
-		"colorBorder": "#ffffff",
-		"colorCard": "#ffffff99",
-		"colorArticle": "#ffffffcc"
+		"colorBrand": "#7c3aed",
+		"colorPrimary": "#1f2937",
+		"colorSecondary": "#6b7280",
+		"colorBrandSecondary": "#ec4899",
+		"colorBg": "#faf5ff",
+		"colorBorder": "#e9d5ff60",
+		"colorCard": "#ffffff80",
+		"colorArticle": "#ffffff90"
 	},
 	"backgroundColors": [
-		"#f7da3987",
-		"#8fdbe9",
-		"#fffef8"
+		"#f5f3ff",
+		"#ede9fe",
+		"#faf5ff"
 	],
 	"artImages": [
 		{
@@ -45,23 +45,23 @@
 		{
 			"id": "github",
 			"type": "github",
-			"value": "https://github.com/yysuni",
+			"value": "https://github.com/wujing123",
 			"label": "Github",
-			"order": 3
+			"order": 1
 		},
 		{
-			"id": "juejin",
-			"type": "juejin",
-			"value": "https://juejin.cn/user/2427311675422382",
-			"label": "稀土掘金",
+			"id": "bilibili",
+			"type": "bilibili",
+			"value": "https://b23.tv/JTki0PE",
+			"label": "Bilibili",
 			"order": 2
 		},
 		{
 			"id": "email",
 			"type": "email",
-			"value": "yysuni1001@gmail.com",
+			"value": "209915224@qq.com",
 			"label": "",
-			"order": 1
+			"order": 3
 		}
 	],
 	"clockShowSeconds": false,

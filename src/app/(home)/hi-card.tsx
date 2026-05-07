@@ -51,8 +51,15 @@ export default function HiCard() {
 					<img src='/images/avatar.png' className='mx-auto rounded-full' style={{ width: 120, height: 120, boxShadow: ' 0 16px 32px -5px #E2D9CE' }} />
 				</Link>
 				<h1 className='font-averia mt-3 text-2xl'>
-					{greeting} <br /> I'm <span className='text-linear text-[32px]'>{username}</span> , Nice to <br /> meet you!
+					{greeting} <br /> I'm <span className='text-linear text-[32px]'>{username}</span>
 				</h1>
+				<p className='mt-2 text-sm text-secondary'>
+					控制工程硕士研究生 <br />
+					专注嵌入式与自动化开发
+				</p>
+				<p className='mt-3 text-xs text-secondary/70'>
+					记录生活 · 分享技术 · 探索未知
+				</p>
 			</Card>
 		</HomeDraggableLayer>
 	)

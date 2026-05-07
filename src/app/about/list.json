@@ -1,5 +1,5 @@
 {
-	"title": "关于本站",
-	"description": "一个基于 Github 的现代化博客系统",
-	"content": "📦网站基于 Github 仓库完全存储，所有内容版本可控\n\n🚀无后端，无 serverless function，纯静态站点\n\n✏️文章通过可视化 UI 直接编辑并提交到 Github 仓库\n\n🔑所有用户都可以编辑，提交需要 Owner 的 Private Key\n\n## 技术栈\n\n- Next.js\n- React\n- TypeScript\n- Tailwind CSS\n- Motion\n- Github API"
+	"title": "吴晶一",
+	"description": "控制工程硕士研究生 | 嵌入式与自动化开发者",
+	"content": "我是一名控制工程专业的硕士研究生，专注于嵌入式系统开发、自动化控制和机器视觉领域。热爱技术创新，具备扎实的编程能力和丰富的项目经验。\n\n## 基本信息\n\n- **姓名**：吴晶一\n- **院校**：广州航海学院\n- **专业**：电气工程及其自动化\n- **邮箱**：209915224@qq.com\n- **电话**：13427784352\n\n## 初试成绩\n\n| 科目 | 分数 |\n|------|------|\n| 政治 | 77 |\n| 英语 | 71 |\n| 数学 | 131 |\n| 专业课 | 123 |\n| **总分** | **402** |\n\n## 专业技能\n\n**编程语言**：C/C++、Python、JavaScript\n\n**硬件开发**：STM32、DSP、MSP430、51单片机\n\n**通信协议**：I2C、SPI、CAN、USB、UART、GPS、NRF\n\n**视觉算法**：OpenCV、OpenMV、K210\n\n**工业控制**：西门子PLC、LabVIEW、TIA Portal\n\n**工程工具**：SolidWorks、AutoCAD、Proteus、Altium Designer\n\n**系统开发**：Linux、ROS系统、Docker\n\n## 技能证书\n\n- 大学英语四级(CET-4)\n- 西门子杯智能制造与自动化设计大赛省一等奖\n- 全国大学生电子设计竞赛省一等奖\n- RobotMaster机甲大师高校联盟赛二等奖\n- 全国大学生物联网设计与制作大赛三等奖\n- 全国海洋航行器设计与制作大赛三等奖\n- 工业和信息化人才岗位能力认证证书\n\n## 个人特点\n\n- 扎实的编程基础，擅长C/C++和Python\n- 丰富的嵌入式开发经验，熟悉多种微控制器\n- 具备机器视觉开发能力，能独立完成图像处理项目\n- 良好的团队协作精神，曾多次参与团队竞赛项目\n- 持续学习新技术，对人工智能和自动化领域有浓厚兴趣"
 }
