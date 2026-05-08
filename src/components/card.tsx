@@ -34,14 +34,11 @@ export default function Card({ children, order, width, height, x, y, className }
 
 	if (show)
 		return (
-			<motion.div
+			<div
 				className={cn('card squircle', className)}
-				initial={{ opacity: 0, scale: 0.6, left: x, top: y, width, height }}
-				animate={{ opacity: 1, scale: 1, left: x, top: y, width, height }}
-				whileHover={{ scale: 1.05 }}
-				whileTap={{ scale: 0.95 }}>
+				style={{ left: x, top: y, width, height }}>
 				{children}
-			</motion.div>
+			</div>
 		)
 
 	return null

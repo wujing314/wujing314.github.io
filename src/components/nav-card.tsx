@@ -138,7 +138,7 @@ export default function NavCard() {
 						</>
 					)}
 
-					<Link className='flex items-center gap-3' href='/'>
+					<Link className='flex items-center gap-3 cursor-pointer relative z-20' href='/'>
 						<Image src='/images/avatar.png' alt='avatar' width={40} height={40} style={{ boxShadow: ' 0 12px 20px -5px #E2D9CE' }} className='rounded-full' />
 						{form === 'full' && <span className='font-averia mt-1 text-2xl leading-none font-medium'>{siteContent.meta.title}</span>}
 						{form === 'full' && <span className='text-brand mt-2 text-xs font-medium'>(开发中)</span>}
@@ -150,38 +150,37 @@ export default function NavCard() {
 
 							<div className={cn('relative mt-2 space-y-2', form === 'icons' && 'mt-0 flex items-center gap-6 space-y-0')}>
 								<motion.div
-									className='absolute max-w-[230px] rounded-full border'
-									layoutId='nav-hover'
-									initial={false}
-									animate={
-										form === 'icons'
-											? {
-													left: hoveredIndex * (itemHeight + 24) - extraSize,
-													top: -extraSize,
-													width: itemHeight + extraSize * 2,
-													height: itemHeight + extraSize * 2
-												}
-											: { top: hoveredIndex * (itemHeight + 8), left: 0, width: '100%', height: itemHeight }
-									}
-									transition={{
-										type: 'spring',
-										stiffness: 400,
-										damping: 30
-									}}
-									style={{ backgroundImage: 'linear-gradient(to right bottom, var(--color-border) 60%, var(--color-card) 100%)' }}
-								/>
+					className='absolute max-w-[230px] rounded-full border pointer-events-none'
+					layoutId='nav-hover'
+					initial={false}
+					animate={
+						form === 'icons'
+							? {
+									left: hoveredIndex * (itemHeight + 24) - extraSize,
+									top: -extraSize,
+									width: itemHeight + extraSize * 2,
+									height: itemHeight + extraSize * 2
+								}
+							: { top: hoveredIndex * (itemHeight + 8), left: 0, width: '100%', height: itemHeight }
+					}
+					transition={{
+						type: 'spring',
+						stiffness: 400,
+						damping: 30
+					}}
+					style={{ backgroundImage: 'linear-gradient(to right bottom, var(--color-border) 60%, var(--color-card) 100%)' }}
+				/>
 
 								{list.map((item, index) => (
-									<Link
+									<button
 										key={item.href}
-										href={item.href}
-										className={cn('text-secondary text-md relative z-10 flex items-center gap-3 rounded-full px-5 py-3', form === 'icons' && 'p-0')}
-										onMouseEnter={() => setHoveredIndex(index)}>
-										<div className='flex h-7 w-7 items-center justify-center'>
-											{hoveredIndex == index ? <item.iconActive className='text-brand absolute h-7 w-7' /> : <item.icon className='absolute h-7 w-7' />}
+										onClick={() => window.location.href = item.href}
+										className={cn('text-secondary text-md relative z-10 flex items-center gap-3 rounded-full px-5 py-3 cursor-pointer bg-transparent border-0', form === 'icons' && 'p-0')}>
+										<div className='flex h-7 w-7 items-center justify-center' onMouseEnter={() => setHoveredIndex(index)}>
+											{hoveredIndex == index ? <item.iconActive className='text-brand h-7 w-7' /> : <item.icon className='h-7 w-7' />}
 										</div>
 										{form !== 'icons' && <span className={clsx(index == hoveredIndex && 'text-primary font-medium')}>{item.label}</span>}
-									</Link>
+									</button>
 								))}
 							</div>
 						</>

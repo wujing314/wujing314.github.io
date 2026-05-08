@@ -201,6 +201,7 @@ export function HomeDraggableLayer({ cardKey, x, y, width, height, children }: H
 	)
 
 	const handleMouseDown: React.MouseEventHandler<HTMLDivElement> = event => {
+		if (!editing) return
 		event.preventDefault()
 		startDrag(event.clientX, event.clientY)
 	}
