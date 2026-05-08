@@ -33,9 +33,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
+
 # cloudflare
 .output
 .wrangler
@@ -44,5 +46,18 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-#vscode
+# vscode
 .history/
+
+# logs
+*.log
+logs/
+
+# cache
+.cache/
+.turbo/
+
+# temporary files
+*.tmp
+*.temp
+.DS_Store

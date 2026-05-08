@@ -1,5 +1,4 @@
 import { NextConfig } from 'next'
-import { codeInspectorPlugin } from 'code-inspector-plugin'
 
 const nextConfig: NextConfig = {
 	devIndicators: false,
@@ -18,11 +17,7 @@ const nextConfig: NextConfig = {
 				loaders: ['@svgr/webpack'],
 				as: '*.js'
 			}
-			// ...codeInspectorPlugin({
-			// 	bundler: 'turbopack'
-			// })
 		},
-
 		resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json', 'css']
 	},
 	webpack: config => {
@@ -47,7 +42,16 @@ const nextConfig: NextConfig = {
 				permanent: true
 			}
 		]
-	}
+	},
+
+	images: {
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: '**',
+			},
+		],
+	},
 }
 
 export default nextConfig
