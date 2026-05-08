@@ -4,7 +4,6 @@ import Card from '@/components/card'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'motion/react'
 import { useCenterStore } from '@/hooks/use-center'
 import { CARD_SPACING } from '@/consts'
 import ScrollOutlineSVG from '@/svgs/scroll-outline.svg'
@@ -56,8 +55,6 @@ const list = [
 		href: '/skill-tree'
 	}
 ]
-
-const extraSize = 8
 
 export default function NavCard() {
 	const pathname = usePathname()
@@ -149,37 +146,25 @@ export default function NavCard() {
 							{form !== 'icons' && <div className='text-secondary mt-6 text-sm uppercase'>General</div>}
 
 							<div className={cn('relative mt-2 space-y-2', form === 'icons' && 'mt-0 flex items-center gap-6 space-y-0')}>
-								<motion.div
-					className='absolute max-w-[230px] rounded-full border pointer-events-none'
-					layoutId='nav-hover'
-					initial={false}
-					animate={
-						form === 'icons'
-							? {
-									left: hoveredIndex * (itemHeight + 24) - extraSize,
-									top: -extraSize,
-									width: itemHeight + extraSize * 2,
-									height: itemHeight + extraSize * 2
-								}
-							: { top: hoveredIndex * (itemHeight + 8), left: 0, width: '100%', height: itemHeight }
-					}
-					transition={{
-						type: 'spring',
-						stiffness: 400,
-						damping: 30
-					}}
-					style={{ backgroundImage: 'linear-gradient(to right bottom, var(--color-border) 60%, var(--color-card) 100%)' }}
-				/>
-
 								{list.map((item, index) => (
 									<button
 										key={item.href}
-										onClick={() => window.location.href = item.href}
-										className={cn('text-secondary text-md relative z-10 flex items-center gap-3 rounded-full px-5 py-3 cursor-pointer bg-transparent border-0', form === 'icons' && 'p-0')}>
-										<div className='flex h-7 w-7 items-center justify-center' onMouseEnter={() => setHoveredIndex(index)}>
+										onClick={() => {
+											if (typeof window !== 'undefined') {
+												window.location.href = item.href
+											}
+										}}
+										className={cn(
+											'text-secondary text-md relative z-10 flex items-center gap-3 rounded-full px-5 py-3 cursor-pointer bg-transparent border-0 transition-all duration-200',
+											form === 'icons' && 'p-0',
+											hoveredIndex === index && 'text-primary font-medium'
+										)}
+										onMouseEnter={() => setHoveredIndex(index)}
+									>
+										<div className='flex h-7 w-7 items-center justify-center'>
 											{hoveredIndex == index ? <item.iconActive className='text-brand h-7 w-7' /> : <item.icon className='h-7 w-7' />}
 										</div>
-										{form !== 'icons' && <span className={clsx(index == hoveredIndex && 'text-primary font-medium')}>{item.label}</span>}
+										{form !== 'icons' && <span>{item.label}</span>}
 									</button>
 								))}
 							</div>

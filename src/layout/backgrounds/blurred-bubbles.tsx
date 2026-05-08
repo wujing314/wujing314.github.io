@@ -1,15 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { motion } from 'motion/react'
 import siteContent from '@/config/site-content.json'
 import { makeNoise2D, rand } from './utils'
 
-/**
- * Blurred Floating Circles Background
- * - Circles spawn with blue-noise-ish spacing
- * - Movement = Perlin/Simplex flow field + soft separation
- * - Coverage control: low-occupancy attraction prevents big empty holes
- * - Constrained to bottom band (e.g. 55%–100% height)
- */
 export default function BlurredBubblesBackground({
 	count = 6,
 	colors = siteContent.backgroundColors,
@@ -20,7 +12,6 @@ export default function BlurredBubblesBackground({
 	noiseScale = 0.0008,
 	noiseTimeScale = 0.00015,
 	targetFps = 6,
-	debugFps = false,
 	startDelayMs = 1500,
 	regenerateKey = 0
 }) {
@@ -31,20 +22,21 @@ export default function BlurredBubblesBackground({
 	useEffect(() => {
 		const canvas = ref.current
 		if (!canvas) return
-		const ctx = canvas.getContext('2d')!
-		let width = (canvas.width = canvas.clientWidth)
-		let height = (canvas.height = canvas.clientHeight)
+		const ctx = canvas.getContext('2d')
+		if (!ctx) return
+		
+		let width = canvas.clientWidth
+		let height = canvas.clientHeight
 
-		const DPR = Math.min(2, window.devicePixelRatio || 1)
+		const DPR = Math.min(2, typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1)
 		canvas.width = Math.floor(width * DPR)
 		canvas.height = Math.floor(height * DPR)
 		ctx.scale(DPR, DPR)
 
 		const effectiveFps = Math.max(1, targetFps)
 
-		// 1s debounce for resize observer
 		let resizeTimer: number | null = null
-		const handleResize: ResizeObserverCallback = () => {
+		const handleResize = () => {
 			if (!canvas || !ctx) return
 			const nextWidth = canvas.clientWidth
 			const nextHeight = canvas.clientHeight
@@ -55,33 +47,33 @@ export default function BlurredBubblesBackground({
 			canvas.height = Math.floor(height * DPR)
 			ctx.setTransform(1, 0, 0, 1, 0, 0)
 			ctx.scale(DPR, DPR)
-			// Recompute occupancy grid on resize
 			allocateGrid()
 			draw()
 		}
-		const onResize: ResizeObserverCallback = (...args) => {
-			if (resizeTimer !== null) window.clearTimeout(resizeTimer)
+		const onResize = () => {
+			if (resizeTimer !== null && typeof window !== 'undefined') {
+				window.clearTimeout(resizeTimer)
+			}
 			resizeTimer = window.setTimeout(() => {
-				handleResize(...args)
+				handleResize()
 				resizeTimer = null
 			}, 1000)
 		}
-		const ro = new ResizeObserver(onResize)
-		ro.observe(canvas)
 
-		// --- Occupancy grid (for coverage guidance) ---
-		const gridCell = 80 // px
-		let gridCols = 0,
-			gridRows = 0,
-			grid: Float32Array
+		if (typeof window !== 'undefined') {
+			window.addEventListener('resize', onResize)
+		}
+
+		const gridCell = 80
+		let gridCols = 0, gridRows = 0, grid: Float32Array
 
 		function allocateGrid() {
 			gridCols = Math.max(1, Math.ceil(width / gridCell))
 			gridRows = Math.max(1, Math.ceil(height / gridCell))
 			grid = new Float32Array(gridCols * gridRows)
 		}
+
 		function stampOccupancy(x: number, y: number, r: number) {
-			// Add a small amount to nearby cells so paths get balanced over time
 			const c0 = Math.floor((x - r) / gridCell)
 			const c1 = Math.floor((x + r) / gridCell)
 			const r0 = Math.floor((y - r) / gridCell)
@@ -90,12 +82,12 @@ export default function BlurredBubblesBackground({
 				for (let cx = c0; cx <= c1; cx++) {
 					if (cx < 0 || cy < 0 || cx >= gridCols || cy >= gridRows) continue
 					const idx = cy * gridCols + cx
-					grid[idx] += 0.5 // weight
+					grid[idx] += 0.5
 				}
 			}
 		}
+
 		function lowestOccupancyTarget() {
-			// Find the lowest occupancy cell inside the bottom band
 			const startRow = Math.floor(gridRows * bottomBandStart)
 			let bestIdx = startRow * gridCols
 			let bestVal = Infinity
@@ -113,9 +105,9 @@ export default function BlurredBubblesBackground({
 			const tx = ((bestIdx % gridCols) + 0.5) * gridCell
 			return { tx, ty }
 		}
+
 		allocateGrid()
 
-		// Poisson-ish initial placement to avoid clusters
 		const bubbles: { x: number; y: number; r: number; color: string; vx: number; vy: number; jitter: number; blur: number }[] = []
 		const minDist = Math.max(minRadius * 0.2, 80)
 		const maxTries = 5000
@@ -147,33 +139,24 @@ export default function BlurredBubblesBackground({
 				})
 			}
 		}
-		// console.log('[bg] tries:', tries)
-		// console.log('[bg] bubbles count:', bubbles.length)
 
-		// --- Animation loop ---
 		const FRAME_INTERVAL = 1000 / effectiveFps
 		let lastTime = 0
 		let accumulatedTime = 0
-		let fpsCounter = 0
-		let fpsStart = 0
 
 		function updatePhysics(t: number) {
 			const { tx, ty } = lowestOccupancyTarget()
 
-			// Update physics
 			for (let i = 0; i < bubbles.length; i++) {
 				const b = bubbles[i]
 
-				// 1) Flow field (smooth wandering)
 				const n = noise.current(b.x * noiseScale, b.y * noiseScale + t * noiseTimeScale)
 				const angle = n * Math.PI * 2
 				const fx = Math.cos(angle) * speed * b.jitter
 				const fy = Math.sin(angle) * speed * b.jitter
 
-				// 2) Separation (avoid clumping)
-				let sx = 0,
-					sy = 0
-				for (let j = 0; j < bubbles.length; j++)
+				let sx = 0, sy = 0
+				for (let j = 0; j < bubbles.length; j++) {
 					if (j !== i) {
 						const o = bubbles[j]
 						const dx = b.x - o.x
@@ -182,37 +165,32 @@ export default function BlurredBubblesBackground({
 						const minD = (b.r + o.r) * 0.4
 						if (d2 < minD * minD && d2 > 0.001) {
 							const d = Math.sqrt(d2)
-							const push = (minD - d) / minD // 0..1
+							const push = (minD - d) / minD
 							sx += (dx / d) * push * 0.8
 							sy += (dy / d) * push * 0.8
 						}
 					}
+				}
 
-				// 3) Coverage bias (drift toward emptier cells)
 				const dxT = tx - b.x
 				const dyT = ty - b.y
 				const dT = Math.hypot(dxT, dyT) + 1e-3
-				const cx = (dxT / dT) * 0.05 // gentle
+				const cx = (dxT / dT) * 0.05
 				const cy = (dyT / dT) * 0.05
 
-				// 4) Vertical band constraint
 				const bandMin = height * bottomBandStart
 				const bandMax = height * 1.5
-				let bx = 0,
-					by = 0
+				let bx = 0, by = 0
 				if (b.y < bandMin) by += (bandMin - b.y) * 0.01
 				if (b.y > bandMax) by -= (b.y - bandMax) * 0.01
 
-				// Combine forces
 				b.vx += fx + sx + cx + bx
 				b.vy += fy + sy + cy + by
 
-				// Apply damping to prevent velocity accumulation
 				const damping = 0.95
 				b.vx *= damping
 				b.vy *= damping
 
-				// Velocity limits to prevent runaway motion
 				const maxVel = 2
 				const vel = Math.hypot(b.vx, b.vy)
 				if (vel > maxVel) {
@@ -220,21 +198,18 @@ export default function BlurredBubblesBackground({
 					b.vy = (b.vy / vel) * maxVel
 				}
 
-				// Integrate
 				b.x += b.vx
 				b.y += b.vy
 
-				// Soft wrap horizontally to avoid bunching at edges
 				if (b.x < -b.r - b.blur / 3) b.x = width + b.r + b.blur / 3
 				if (b.x > width + b.r + b.blur / 3) b.x = -b.r - b.blur / 3
 
-				// Keep a little padding from exact edge vertically
 				b.y = Math.min(Math.max(b.y, bandMin - b.r * 0.25), bandMax + b.r * 0.25)
 
-				// Occupancy stamp
 				stampOccupancy(b.x, b.y, b.r * 0.6)
 			}
 		}
+
 		function draw() {
 			for (const b of bubbles) {
 				ctx.save()
@@ -251,71 +226,61 @@ export default function BlurredBubblesBackground({
 		function frame(t: number) {
 			if (!ctx) return
 
-			// Rate limiting
-			{
-				if (document.hidden) {
-					animRef.current = requestAnimationFrame(frame)
-					return
-				}
-
-				// Frame rate limiting
-				const deltaTime = lastTime ? t - lastTime : 0
-				lastTime = t
-				accumulatedTime += deltaTime
-
-				if (accumulatedTime < FRAME_INTERVAL) {
-					animRef.current = requestAnimationFrame(frame)
-					return
-				}
-
-				accumulatedTime = 0
+			if (typeof document !== 'undefined' && document.hidden) {
+				animRef.current = requestAnimationFrame(frame)
+				return
 			}
+
+			const deltaTime = lastTime ? t - lastTime : 0
+			lastTime = t
+			accumulatedTime += deltaTime
+
+			if (accumulatedTime < FRAME_INTERVAL) {
+				animRef.current = requestAnimationFrame(frame)
+				return
+			}
+
+			accumulatedTime = 0
 
 			ctx.clearRect(0, 0, width, height)
-
 			updatePhysics(t)
-
 			draw()
-
-			// FPS measurement (optional)
-			if (debugFps) {
-				if (fpsStart === 0) fpsStart = t
-				fpsCounter++
-				if (t - fpsStart >= 1000) {
-					// Log measured fps vs target
-					// eslint-disable-next-line no-console
-					console.log('[blurred-bubbles] fps=', fpsCounter, 'target=', effectiveFps)
-					fpsCounter = 0
-					fpsStart = t
-				}
-			}
 
 			animRef.current = requestAnimationFrame(frame)
 		}
 
-		if (window.innerWidth < 640) {
+		if (typeof window !== 'undefined' && window.innerWidth < 640) {
 			setTimeout(() => {
 				animRef.current = requestAnimationFrame(frame)
 			}, startDelayMs)
+		} else if (typeof window !== 'undefined') {
+			animRef.current = requestAnimationFrame(frame)
 		}
 
 		draw()
 
 		return () => {
-			cancelAnimationFrame(animRef.current)
-			ro.disconnect()
-			if (resizeTimer !== null) window.clearTimeout(resizeTimer)
+			if (typeof cancelAnimationFrame === 'function') {
+				cancelAnimationFrame(animRef.current)
+			}
+			if (typeof window !== 'undefined') {
+				window.removeEventListener('resize', onResize)
+			}
+			if (resizeTimer !== null && typeof window !== 'undefined') {
+				window.clearTimeout(resizeTimer)
+			}
 		}
 	}, [colors, regenerateKey])
 
 	return (
-		<motion.div
-			animate={{ opacity: 1 }}
-			initial={{ opacity: 0 }}
-			transition={{ duration: 1 }}
+		<div 
 			className='fixed inset-0 z-0 overflow-hidden'
-			style={{ filter: 'blur(50px)' }}>
+			style={{ 
+				filter: 'blur(50px)',
+				opacity: 1
+			}}
+		>
 			<canvas ref={ref} className='h-full w-full' style={{ display: 'block' }} />
-		</motion.div>
+		</div>
 	)
 }

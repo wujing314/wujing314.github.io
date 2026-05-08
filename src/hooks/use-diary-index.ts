@@ -1,13 +1,33 @@
 import useSWR from 'swr'
 import { useAuthStore } from '@/hooks/use-auth'
-import type { DiaryIndexItem } from '@/app/diary/types'
+import type { DiaryIndexItem, DiaryEntry } from '@/app/diary/types'
+import { GITHUB_CONFIG } from '@/consts'
+import { loadFromLocalStorage } from '@/lib/local-storage'
 
 export type { DiaryIndexItem }
 
-// 改进 fetcher，抛出状态码以便处理 404
+const DIARIES_KEY = 'diary_entries'
+const DIARY_INDEX_KEY = 'diary_index'
+
+// 从日记条目生成索引
+function generateIndexFromEntries(entries: DiaryEntry[]): DiaryIndexItem[] {
+	return entries.map(entry => ({
+		date: entry.date,
+		title: entry.title,
+		slug: entry.date.replace(/-/g, ''),
+		tags: entry.tags,
+		category: entry.category,
+		summary: entry.content.substring(0, 100) + (entry.content.length > 100 ? '...' : '')
+	}))
+}
+
+// 改进 fetcher，处理 404 错误
 const fetcher = async (url: string) => {
 	const res = await fetch(url, { cache: 'no-store' })
 	if (!res.ok) {
+		if (res.status === 404) {
+			return []
+		}
 		const error: any = new Error('Fetch failed')
 		error.status = res.status
 		throw error
@@ -18,9 +38,28 @@ const fetcher = async (url: string) => {
 
 export function useDiaryIndex() {
 	const { isAuth } = useAuthStore()
+	
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		// 优先从日记条目生成索引，确保数据最新
+		const entries = loadFromLocalStorage<DiaryEntry[]>(DIARIES_KEY, [])
+		const index = generateIndexFromEntries(entries)
+		const filtered = isAuth ? index : index.filter(item => !item.hidden)
+		return {
+			items: filtered,
+			loading: false,
+			error: null
+		}
+	}
+
 	const { data, error, isLoading } = useSWR<DiaryIndexItem[]>('/diary/index.json', fetcher, {
 		revalidateOnFocus: false,
-		revalidateOnReconnect: true
+		revalidateOnReconnect: true,
+		onError: (err) => {
+			const errorWithStatus = err as { status?: number }
+			if (errorWithStatus.status !== 404) {
+				console.error('Failed to fetch diary index:', err)
+			}
+		}
 	})
 
 	let result = data || []
@@ -31,7 +70,7 @@ export function useDiaryIndex() {
 	return {
 		items: result,
 		loading: isLoading,
-		error
+		error: error && ((error as { status?: number }).status !== 404) ? error : null
 	}
 }
 

@@ -25,6 +25,14 @@ export default function CalendarCard() {
 	const x = styles.offsetX !== null ? center.x + styles.offsetX : center.x + CARD_SPACING + hiCardStyles.width / 2
 	const y = styles.offsetY !== null ? center.y + styles.offsetY : center.y - clockCardStyles.offset + CARD_SPACING
 
+	const handleDayClick = (day: number) => {
+		const date = now.month(now.month()).date(day).format('YYYY-MM-DD')
+		if (typeof window !== 'undefined') {
+			// 跳转到文章编辑页面，日期作为参数传递
+			window.location.href = `/write?date=${date}`
+		}
+	}
+
 	return (
 		<HomeDraggableLayer cardKey='calendarCard' x={x} y={y} width={styles.width} height={styles.height}>
 			<Card order={styles.order} width={styles.width} height={styles.height} x={x} y={y} className='flex flex-col'>
@@ -60,12 +68,20 @@ export default function CalendarCard() {
 						const day = index + 1
 						const isToday = day === currentDate
 						return (
-							<li key={day} className={cn('flex items-center justify-center rounded-lg', isToday && 'bg-linear border font-medium')}>
+							<li
+								key={day}
+								onClick={() => handleDayClick(day)}
+								className={cn(
+									'flex items-center justify-center rounded-lg cursor-pointer transition-all hover:bg-white/60',
+									isToday && 'bg-linear border font-medium'
+								)}
+							>
 								{day}
 							</li>
 						)
 					})}
 				</ul>
+				<p className='text-center text-xs text-secondary mt-2'>点击日期写文章</p>
 			</Card>
 		</HomeDraggableLayer>
 	)
