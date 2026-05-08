@@ -3,7 +3,7 @@ import { NextConfig } from 'next'
 const nextConfig: NextConfig = {
 	devIndicators: false,
 	reactStrictMode: false,
-	reactCompiler: true,
+	// reactCompiler: true, // 禁用 React Compiler，因为缺少 babel-plugin-react-compiler 依赖
 	pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
 	typescript: {
 		ignoreBuildErrors: true
