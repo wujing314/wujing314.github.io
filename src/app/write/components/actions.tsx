@@ -1,23 +1,24 @@
 import { motion } from 'motion/react'
-import { useRef, useState } from 'react'
+import { useState, useRef } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useWriteStore } from '../stores/write-store'
 import { usePreviewStore } from '../stores/preview-store'
 import { usePublish } from '../hooks/use-publish'
+import { LoginModal } from '@/components/login-modal'
 
 export function WriteActions() {
 	const { loading, mode, form, loadBlogForEdit, originalSlug, updateForm } = useWriteStore()
 	const { openPreview } = usePreviewStore()
-	const { isAuth, onChoosePrivateKey, onPublish, onDelete } = usePublish()
+	const { isAuth, onPublish, onDelete } = usePublish()
 	const [saving, setSaving] = useState(false)
-	const keyInputRef = useRef<HTMLInputElement>(null)
+	const [loginModalOpen, setLoginModalOpen] = useState(false)
 	const mdInputRef = useRef<HTMLInputElement>(null)
 	const router = useRouter()
 
 	const handleImportOrPublish = () => {
 		if (!isAuth) {
-			keyInputRef.current?.click()
+			setLoginModalOpen(true)
 		} else {
 			onPublish()
 		}
@@ -68,17 +69,6 @@ export function WriteActions() {
 
 	return (
 		<>
-			<input
-				ref={keyInputRef}
-				type='file'
-				accept='.pem'
-				className='hidden'
-				onChange={async e => {
-					const f = e.target.files?.[0]
-					if (f) await onChoosePrivateKey(f)
-					if (e.currentTarget) e.currentTarget.value = ''
-				}}
-			/>
 			<input ref={mdInputRef} type='file' accept='.md' className='hidden' onChange={handleMdFileChange} />
 
 			<ul className='absolute top-4 right-6 flex items-center gap-2'>
@@ -141,6 +131,11 @@ export function WriteActions() {
 					{buttonText}
 				</motion.button>
 			</ul>
+
+			<LoginModal
+				open={loginModalOpen}
+				onClose={() => setLoginModalOpen(false)}
+			/>
 		</>
 	)
 }
