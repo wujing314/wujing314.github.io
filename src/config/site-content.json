@@ -1,23 +1,23 @@
 {
 	"meta": {
-		"title": "吴晶",
-		"description": "吴晶的个人主页，记录生活点滴与技术思考。",
+		"title": "吴晶 - 控制工程硕士",
+		"description": "控制工程硕士在读，专注机器人学与人工智能应用研究",
 		"username": "吴晶"
 	},
 	"theme": {
-		"colorBrand": "#7c3aed",
-		"colorPrimary": "#1f2937",
-		"colorSecondary": "#6b7280",
-		"colorBrandSecondary": "#ec4899",
-		"colorBg": "#faf5ff",
-		"colorBorder": "#e9d5ff60",
-		"colorCard": "#ffffff80",
-		"colorArticle": "#ffffff90"
+		"colorBrand": "#2fcbe7",
+		"colorPrimary": "#5B423F",
+		"colorSecondary": "#8b7667",
+		"colorBrandSecondary": "#eec25e",
+		"colorBg": "#d4e8f3",
+		"colorBorder": "#ffffff",
+		"colorCard": "#ffffff99",
+		"colorArticle": "#ffffffcc"
 	},
 	"backgroundColors": [
-		"#f5f3ff",
-		"#ede9fe",
-		"#faf5ff"
+		"#f7da3987",
+		"#8fdbe9",
+		"#fffef8"
 	],
 	"artImages": [
 		{
@@ -45,23 +45,30 @@
 		{
 			"id": "github",
 			"type": "github",
-			"value": "https://github.com/wujing123",
-			"label": "Github",
-			"order": 1
+			"value": "https://github.com/wujing-dev",
+			"label": "GitHub",
+			"order": 4
+		},
+		{
+			"id": "csdn",
+			"type": "link",
+			"value": "https://blog.csdn.net/wujing_dev",
+			"label": "CSDN",
+			"order": 3
 		},
 		{
 			"id": "bilibili",
-			"type": "bilibili",
-			"value": "https://b23.tv/JTki0PE",
-			"label": "Bilibili",
+			"type": "link",
+			"value": "https://space.bilibili.com/wujing-tech",
+			"label": "B站",
 			"order": 2
 		},
 		{
 			"id": "email",
 			"type": "email",
-			"value": "209915224@qq.com",
-			"label": "",
-			"order": 3
+			"value": "2099915224@qq.com",
+			"label": "邮箱",
+			"order": 1
 		}
 	],
 	"clockShowSeconds": false,

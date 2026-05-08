@@ -2,7 +2,6 @@ import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, 
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { getAuthToken } from '@/lib/auth'
 import { GITHUB_CONFIG } from '@/consts'
-import { saveToLocalStorage } from '@/lib/local-storage'
 import type { ImageItem } from '../../projects/components/image-upload-dialog'
 import { getFileExt } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -13,7 +12,7 @@ export type PushPicturesParams = {
 	imageItems?: Map<string, ImageItem>
 }
 
-async function pushPicturesOnline(params: PushPicturesParams): Promise<void> {
+export async function pushPictures(params: PushPicturesParams): Promise<void> {
 	const { pictures, imageItems } = params
 
 	const token = await getAuthToken()
@@ -72,6 +71,7 @@ async function pushPicturesOnline(params: PushPicturesParams): Promise<void> {
 		}
 	}
 
+	// 收集当前所有使用的图片 URL
 	const currentImageUrls = new Set<string>()
 	for (const picture of updatedPictures) {
 		if (picture.image) {
@@ -82,6 +82,7 @@ async function pushPicturesOnline(params: PushPicturesParams): Promise<void> {
 		}
 	}
 
+	// 读取之前的 list.json，找出不再使用的图片文件
 	toast.info('正在检查需要删除的文件...')
 	const previousListJson = await readTextFileFromRepo(
 		token,
@@ -105,8 +106,10 @@ async function pushPicturesOnline(params: PushPicturesParams): Promise<void> {
 				}
 			}
 
+			// 找出不再使用的图片 URL
 			for (const url of previousImageUrls) {
 				if (!currentImageUrls.has(url) && url.startsWith('/images/pictures/')) {
+					// 这是一个本地图片文件，需要删除
 					const filename = url.replace('/images/pictures/', '')
 					const path = `public/images/pictures/${filename}`
 					treeItems.push({
@@ -141,49 +144,4 @@ async function pushPicturesOnline(params: PushPicturesParams): Promise<void> {
 	await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
 
 	toast.success('发布成功！')
-}
-
-async function pushPicturesOffline(params: PushPicturesParams): Promise<void> {
-	const { pictures, imageItems } = params
-
-	toast.info('正在保存到本地...')
-
-	let updatedPictures = [...pictures]
-
-	if (imageItems && imageItems.size > 0) {
-		toast.info('正在处理图片...')
-		for (const [key, imageItem] of imageItems.entries()) {
-			if (imageItem.type === 'file') {
-				const contentBase64 = await fileToBase64NoPrefix(imageItem.file)
-				const dataUrl = `data:image/${getFileExt(imageItem.file.name).slice(1)};base64,${contentBase64}`
-
-				const [groupId, indexStr] = key.split('::')
-				const imageIndex = Number(indexStr) || 0
-
-				updatedPictures = updatedPictures.map(p => {
-					if (p.id !== groupId) return p
-
-					const currentImages = p.images && p.images.length > 0 ? p.images : p.image ? [p.image] : []
-					const nextImages = currentImages.map((img, idx) => (idx === imageIndex ? dataUrl : img))
-
-					return {
-						...p,
-						image: undefined,
-						images: nextImages
-					}
-				})
-			}
-		}
-	}
-
-	saveToLocalStorage('pictures', updatedPictures)
-	toast.success('已保存到本地！')
-}
-
-export async function pushPictures(params: PushPicturesParams): Promise<void> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		await pushPicturesOffline(params)
-	} else {
-		await pushPicturesOnline(params)
-	}
 }

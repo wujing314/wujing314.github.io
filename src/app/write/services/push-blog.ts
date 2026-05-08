@@ -3,7 +3,6 @@ import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { prepareBlogsIndex } from '@/lib/blog-index'
 import { getAuthToken } from '@/lib/auth'
 import { GITHUB_CONFIG } from '@/consts'
-import { saveToLocalStorage, loadFromLocalStorage } from '@/lib/local-storage'
 import type { ImageItem } from '../types'
 import { getFileExt } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -26,20 +25,7 @@ export type PushBlogParams = {
 	originalSlug?: string | null
 }
 
-export type BlogData = {
-	slug: string
-	title: string
-	md: string
-	tags: string[]
-	date: string
-	summary?: string
-	cover?: string
-	hidden?: boolean
-	category?: string
-	images?: Record<string, string>
-}
-
-async function pushBlogOnline(params: PushBlogParams): Promise<void> {
+export async function pushBlog(params: PushBlogParams): Promise<void> {
 	const { form, cover, images, mode = 'create', originalSlug } = params
 
 	if (!form?.slug) throw new Error('需要 slug')
@@ -48,6 +34,7 @@ async function pushBlogOnline(params: PushBlogParams): Promise<void> {
 		throw new Error('编辑模式下不支持修改 slug，请保持原 slug 不变')
 	}
 
+	// 获取认证 token（自动从全局认证状态获取）
 	const token = await getAuthToken()
 
 	toast.info('正在获取分支信息...')
@@ -57,14 +44,17 @@ async function pushBlogOnline(params: PushBlogParams): Promise<void> {
 	const basePath = `public/blogs/${form.slug}`
 	const commitMessage = mode === 'edit' ? `更新文章: ${form.slug}` : `新增文章: ${form.slug}`
 
+	// collect all local images (content + cover)
 	const allLocalImages: Array<{ img: Extract<ImageItem, { type: 'file' }>; id: string }> = []
 
+	// add content images
 	for (const img of images || []) {
 		if (img.type === 'file') {
 			allLocalImages.push({ img, id: img.id })
 		}
 	}
 
+	// add cover if local
 	if (cover?.type === 'file') {
 		allLocalImages.push({ img: cover, id: cover.id })
 	}
@@ -75,8 +65,10 @@ async function pushBlogOnline(params: PushBlogParams): Promise<void> {
 	let mdToUpload = form.md
 	let coverPath: string | undefined
 
+	// prepare tree items for all files
 	const treeItems: TreeItem[] = []
 
+	// process all images
 	if (allLocalImages.length > 0) {
 		toast.info('正在上传图片...')
 		for (const { img, id } of allLocalImages) {
@@ -88,6 +80,7 @@ async function pushBlogOnline(params: PushBlogParams): Promise<void> {
 			if (!uploadedHashes.has(hash)) {
 				const path = `${basePath}/${filename}`
 				const contentBase64 = await fileToBase64NoPrefix(img.file)
+				// create blob for image
 				const blobData = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, contentBase64, 'base64')
 				treeItems.push({
 					path,
@@ -98,21 +91,25 @@ async function pushBlogOnline(params: PushBlogParams): Promise<void> {
 				uploadedHashes.add(hash)
 			}
 
+			// replace placeholder in markdown
 			const placeholder = `local-image:${id}`
 			mdToUpload = mdToUpload.split(`(${placeholder})`).join(`(${publicPath})`)
 
+			// set cover path if this is the cover
 			if (cover?.type === 'file' && cover.id === id) {
 				coverPath = publicPath
 			}
 		}
 	}
 
+	// handle external cover URL
 	if (cover?.type === 'url') {
 		coverPath = cover.url
 	}
 
 	toast.info('正在创建文件...')
 
+	// create blob for index.md
 	const mdBlob = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, toBase64Utf8(mdToUpload), 'base64')
 	treeItems.push({
 		path: `${basePath}/index.md`,
@@ -121,6 +118,7 @@ async function pushBlogOnline(params: PushBlogParams): Promise<void> {
 		sha: mdBlob.sha
 	})
 
+	// create blob for config.json
 	const dateStr = form.date || formatDateTimeLocal()
 	const config = {
 		title: form.title,
@@ -140,6 +138,7 @@ async function pushBlogOnline(params: PushBlogParams): Promise<void> {
 		sha: configBlob.sha
 	})
 
+	// prepare and create blob for blogs index
 	const indexJson = await prepareBlogsIndex(
 		token,
 		GITHUB_CONFIG.OWNER,
@@ -164,85 +163,17 @@ async function pushBlogOnline(params: PushBlogParams): Promise<void> {
 		sha: indexBlob.sha
 	})
 
+	// create tree
 	toast.info('正在创建文件树...')
 	const treeData = await createTree(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, treeItems, latestCommitSha)
 
+	// create commit
 	toast.info('正在创建提交...')
 	const commitData = await createCommit(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, commitMessage, treeData.sha, [latestCommitSha])
 
+	// update branch reference
 	toast.info('正在更新分支...')
 	await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
 
 	toast.success('发布成功！')
-}
-
-async function pushBlogOffline(params: PushBlogParams): Promise<void> {
-	const { form, cover, images, mode = 'create' } = params
-
-	if (!form?.slug) throw new Error('需要 slug')
-
-	toast.info('正在保存到本地...')
-
-	const dateStr = form.date || formatDateTimeLocal()
-	const blogData: BlogData = {
-		slug: form.slug,
-		title: form.title,
-		md: form.md,
-		tags: form.tags,
-		date: dateStr,
-		summary: form.summary,
-		hidden: form.hidden,
-		category: form.category,
-		images: {}
-	}
-
-	let mdToSave = form.md
-
-	if (cover?.type === 'file') {
-		const contentBase64 = await fileToBase64NoPrefix(cover.file)
-		const dataUrl = `data:image/${getFileExt(cover.file.name).slice(1)};base64,${contentBase64}`
-		blogData.cover = dataUrl
-		const placeholder = `local-image:${cover.id}`
-		mdToSave = mdToSave.split(`(${placeholder})`).join(`(${dataUrl})`)
-	} else if (cover?.type === 'url') {
-		blogData.cover = cover.url
-	}
-
-	if (images) {
-		for (const img of images) {
-			if (img.type === 'file') {
-				const contentBase64 = await fileToBase64NoPrefix(img.file)
-				const dataUrl = `data:image/${getFileExt(img.file.name).slice(1)};base64,${contentBase64}`
-				blogData.images![img.id] = dataUrl
-				const placeholder = `local-image:${img.id}`
-				mdToSave = mdToSave.split(`(${placeholder})`).join(`(${dataUrl})`)
-			}
-		}
-	}
-
-	blogData.md = mdToSave
-
-	const existingBlogs = loadFromLocalStorage<BlogData[]>('blogs', [])
-	
-	if (mode === 'edit') {
-		const index = existingBlogs.findIndex(b => b.slug === form.slug)
-		if (index >= 0) {
-			existingBlogs[index] = blogData
-		} else {
-			existingBlogs.push(blogData)
-		}
-	} else {
-		existingBlogs.push(blogData)
-	}
-
-	saveToLocalStorage('blogs', existingBlogs)
-	toast.success('已保存到本地！')
-}
-
-export async function pushBlog(params: PushBlogParams): Promise<void> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		await pushBlogOffline(params)
-	} else {
-		await pushBlogOnline(params)
-	}
 }

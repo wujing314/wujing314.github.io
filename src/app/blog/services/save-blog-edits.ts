@@ -2,10 +2,9 @@ import { toast } from 'sonner'
 import { GITHUB_CONFIG } from '@/consts'
 import { getAuthToken } from '@/lib/auth'
 import { createBlob, createCommit, createTree, getRef, listRepoFilesRecursive, toBase64Utf8, type TreeItem, updateRef } from '@/lib/github-client'
-import { saveToLocalStorage } from '@/lib/local-storage'
 import type { BlogIndexItem } from '@/lib/blog-index'
 
-async function saveBlogEditsOnline(originalItems: BlogIndexItem[], nextItems: BlogIndexItem[], categories: string[]): Promise<void> {
+export async function saveBlogEdits(originalItems: BlogIndexItem[], nextItems: BlogIndexItem[], categories: string[]): Promise<void> {
 	const removedSlugs = originalItems.filter(item => !nextItems.some(next => next.slug === item.slug)).map(item => item.slug)
 	const uniqueRemoved = Array.from(new Set(removedSlugs.filter(Boolean)))
 
@@ -73,20 +72,3 @@ async function saveBlogEditsOnline(originalItems: BlogIndexItem[], nextItems: Bl
 	toast.success('保存成功！请等待页面部署后刷新')
 }
 
-async function saveBlogEditsOffline(nextItems: BlogIndexItem[], categories: string[]): Promise<void> {
-	toast.info('正在保存到本地...')
-	const sortedItems = [...nextItems].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-	const uniqueCategories = Array.from(new Set(categories.map(c => c.trim()).filter(Boolean)))
-	
-	saveToLocalStorage('blogItems', sortedItems)
-	saveToLocalStorage('blogCategories', { categories: uniqueCategories })
-	toast.success('已保存到本地！')
-}
-
-export async function saveBlogEdits(originalItems: BlogIndexItem[], nextItems: BlogIndexItem[], categories: string[]): Promise<void> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		await saveBlogEditsOffline(nextItems, categories)
-	} else {
-		await saveBlogEditsOnline(originalItems, nextItems, categories)
-	}
-}

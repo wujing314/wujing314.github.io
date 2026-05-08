@@ -6,44 +6,43 @@ import weekOfYear from 'dayjs/plugin/weekOfYear'
 import { motion } from 'motion/react'
 
 dayjs.extend(weekOfYear)
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { INIT_DELAY } from '@/consts'
 import ShortLineSVG from '@/svgs/short-line.svg'
 import { useBlogIndex, type BlogIndexItem } from '@/hooks/use-blog-index'
 import { useCategories } from '@/hooks/use-categories'
 import { useReadArticles } from '@/hooks/use-read-articles'
+import JuejinSVG from '@/svgs/juejin.svg'
+import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
+import { readFileAsText } from '@/lib/file-utils'
 import { cn } from '@/lib/utils'
 import { saveBlogEdits } from './services/save-blog-edits'
-import { Check, Calendar, Plus, FileText } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { BlogCoverHoverPreview, useBlogCoverHover } from './components/blog-cover-hover'
 import { CategoryModal } from './components/category-modal'
-import { CalendarModal } from './components/calendar-modal'
-import { useRouter } from 'next/navigation'
 
 type DisplayMode = 'day' | 'week' | 'month' | 'year' | 'category'
 
-export default function DiaryPage() {
+export default function BlogPage() {
 	const { items, loading } = useBlogIndex()
 	const { categories: categoriesFromServer } = useCategories()
 	const { isRead } = useReadArticles()
+	const { isAuth, setPassword } = useAuthStore()
 	const { siteContent } = useConfigStore()
 	const hideEditButton = siteContent.hideEditButton ?? false
 	const enableCategories = siteContent.enableCategories ?? false
-	const router = useRouter()
 
+	const keyInputRef = useRef<HTMLInputElement>(null)
 	const [editMode, setEditMode] = useState(false)
 	const [editableItems, setEditableItems] = useState<BlogIndexItem[]>([])
 	const [selectedSlugs, setSelectedSlugs] = useState<Set<string>>(new Set())
 	const [saving, setSaving] = useState(false)
-	const [displayMode, setDisplayMode] = useState<DisplayMode>('month')
+	const [displayMode, setDisplayMode] = useState<DisplayMode>('year')
 	const [categoryModalOpen, setCategoryModalOpen] = useState(false)
 	const [categoryList, setCategoryList] = useState<string[]>([])
 	const [newCategory, setNewCategory] = useState('')
-	const [calendarModalOpen, setCalendarModalOpen] = useState(false)
-	
-	const mdInputRef = useRef<HTMLInputElement>(null)
 
 	const { cancelCoverPreview, onCoverLinkMouseEnter, hoverCoverPreview, mousePosition } = useBlogCoverHover(editMode)
 
@@ -110,7 +109,9 @@ export default function DiaryPage() {
 				if (aOrder !== bOrder) return aOrder - bOrder
 				return a.localeCompare(b)
 			}
+			// 按时间倒序排序
 			if (displayMode === 'week') {
+				// 周格式：YYYY-WW
 				const [yearA, weekA] = a.split('-W').map(Number)
 				const [yearB, weekB] = b.split('-W').map(Number)
 				if (yearA !== yearB) return yearB - yearA
@@ -127,9 +128,7 @@ export default function DiaryPage() {
 	}, [displayItems, displayMode, categoryList])
 
 	const selectedCount = selectedSlugs.size
-	const buttonText = '保存'
-
-	const existingDates = items.map(item => dayjs(item.date).format('YYYY-MM-DD'))
+	const buttonText = isAuth ? '保存' : '输入密码'
 
 	const toggleEditMode = useCallback(() => {
 		if (editMode) {
@@ -154,24 +153,29 @@ export default function DiaryPage() {
 		})
 	}, [])
 
+	// 全选所有文章
 	const handleSelectAll = useCallback(() => {
 		setSelectedSlugs(new Set(editableItems.map(item => item.slug)))
 	}, [editableItems])
 
+	// 全选/取消全选某个时间维度分组
 	const handleSelectGroup = useCallback(
 		(groupKey: string) => {
 			const group = groupedItems[groupKey]
 			if (!group) return
 
+			// 检查该分组是否所有文章都已选中
 			const allSelected = group.items.every(item => selectedSlugs.has(item.slug))
 
 			setSelectedSlugs(prev => {
 				const next = new Set(prev)
 				if (allSelected) {
+					// 如果已全选，则取消该分组的选择
 					group.items.forEach(item => {
 						next.delete(item.slug)
 					})
 				} else {
+					// 如果未全选，则全选该分组
 					group.items.forEach(item => {
 						next.add(item.slug)
 					})
@@ -182,6 +186,7 @@ export default function DiaryPage() {
 		[groupedItems, selectedSlugs]
 	)
 
+	// 取消全选
 	const handleDeselectAll = useCallback(() => {
 		setSelectedSlugs(new Set())
 	}, [])
@@ -198,7 +203,7 @@ export default function DiaryPage() {
 
 	const handleDeleteSelected = useCallback(() => {
 		if (selectedCount === 0) {
-			toast.info('请选择要删除的日记')
+			toast.info('请选择要删除的文章')
 			return
 		}
 		setEditableItems(prev => prev.filter(item => !selectedSlugs.has(item.slug)))
@@ -273,48 +278,26 @@ export default function DiaryPage() {
 	}, [items, editableItems, categoryList, categoriesFromServer])
 
 	const handleSaveClick = useCallback(() => {
+		if (!isAuth) {
+			keyInputRef.current?.click()
+			return
+		}
 		void handleSave()
-	}, [handleSave])
+	}, [handleSave, isAuth])
 
-	const handleNewDiary = useCallback((date?: string) => {
-		const targetDate = date || dayjs().format('YYYY-MM-DD')
-		router.push(`/write?date=${targetDate}`)
-	}, [router])
-
-	const handleOpenCalendar = useCallback(() => {
-		setCalendarModalOpen(true)
-	}, [])
-
-	const handleSelectDate = useCallback((date: string) => {
-		handleNewDiary(date)
-	}, [handleNewDiary])
-
-	const handleImportMd = useCallback(() => {
-		if (mdInputRef.current) {
-			mdInputRef.current.click()
-		}
-	}, [])
-
-	const handleMdFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0]
-		if (!file) return
-
-		try {
-			const text = await file.text()
-			const dateMatch = text.match(/---\s*date:\s*(\d{4}-\d{2}-\d{2})\s*---/)
-			const titleMatch = text.match(/---\s*title:\s*(.+?)\s*---/)
-			
-			const diaryDate = dateMatch ? dateMatch[1] : dayjs().format('YYYY-MM-DD')
-			const title = titleMatch ? titleMatch[1] : file.name.replace(/\.md$/, '')
-			
-			router.push(`/write?date=${diaryDate}&title=${encodeURIComponent(title)}&import=${encodeURIComponent(text)}`)
-			toast.success('正在导入日记...')
-		} catch (error) {
-			toast.error('导入失败，请重试')
-		} finally {
-			if (e.currentTarget) e.currentTarget.value = ''
-		}
-	}, [router])
+	const handlePrivateKeySelection = useCallback(
+		async (file: File) => {
+			try {
+				const pem = await readFileAsText(file)
+				setPassword(pem)
+				toast.success('密钥导入成功，请再次点击保存')
+			} catch (error) {
+				console.error(error)
+				toast.error('读取密钥失败')
+			}
+		},
+		[setPassword]
+	)
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -332,25 +315,24 @@ export default function DiaryPage() {
 
 	return (
 		<>
-			<input 
-				ref={mdInputRef} 
-				type='file' 
-				accept='.md' 
-				className='hidden' 
-				onChange={handleMdFileChange} 
+			<input
+				ref={keyInputRef}
+				type='file'
+				accept='.pem'
+				className='hidden'
+				onChange={async e => {
+					const f = e.target.files?.[0]
+					if (f) await handlePrivateKeySelection(f)
+					if (e.currentTarget) e.currentTarget.value = ''
+				}}
 			/>
 
 			<div className='flex flex-col items-center justify-center gap-6 px-6 pt-24 max-sm:pt-24'>
-				<div className='mb-6 text-center'>
-					<h1 className='text-2xl font-bold text-primary'>日记</h1>
-					<p className='text-secondary mt-2 text-sm'>记录生活的点点滴滴</p>
-				</div>
-
 				{items.length > 0 && (
 					<motion.div
 						initial={{ opacity: 0, scale: 0.6 }}
 						animate={{ opacity: 1, scale: 1 }}
-						className='card btn-rounded backdrop-blur-sm relative mx-auto flex items-center gap-2 p-1 max-sm:hidden'>
+						className='card btn-rounded relative mx-auto flex items-center gap-1 p-1 max-sm:hidden'>
 						{[
 							{ value: 'day', label: '日' },
 							{ value: 'week', label: '周' },
@@ -384,12 +366,12 @@ export default function DiaryPage() {
 							initial={{ opacity: 0, scale: 0.95 }}
 							whileInView={{ opacity: 1, scale: 1 }}
 							transition={{ delay: INIT_DELAY / 2 }}
-							className='card backdrop-blur-sm relative w-full max-w-[840px] space-y-6'>
+							className='card relative w-full max-w-[840px] space-y-6'>
 							<div className='mb-3 flex items-center justify-between gap-3 text-base'>
 								<div className='flex items-center gap-3'>
 									<div className='font-medium'>{getGroupLabel(groupKey)}</div>
 									<div className='h-2 w-2 rounded-full bg-[#D9D9D9]'></div>
-									<div className='text-secondary text-sm'>{group.items.length} 篇日记</div>
+									<div className='text-secondary text-sm'>{group.items.length} 篇文章</div>
 								</div>
 								{editMode &&
 									(() => {
@@ -467,29 +449,32 @@ export default function DiaryPage() {
 						</motion.div>
 					)
 				})}
+				{items.length > 0 && (
+					<div className='text-center'>
+						<motion.a
+							initial={{ opacity: 0, scale: 0.6 }}
+							animate={{ opacity: 1, scale: 1 }}
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							href='https://juejin.cn/user/2427311675422382/posts'
+							target='_blank'
+							className='card text-secondary static inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs'>
+							<JuejinSVG className='h-4 w-4' />
+							更多
+						</motion.a>
+					</div>
+				)}
 			</div>
 
 			<div className='pt-12'>
-				{!loading && items.length === 0 && (
-					<div className='text-center'>
-						<div className='text-secondary py-6 text-sm'>还没有日记</div>
-						<motion.button
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-							onClick={() => handleNewDiary()}
-							className='brand-btn inline-flex items-center gap-2 px-6 py-2'>
-							<Plus className='h-4 w-4' />
-							写第一篇日记
-						</motion.button>
-					</div>
-				)}
+				{!loading && items.length === 0 && <div className='text-secondary py-6 text-center text-sm'>暂无文章</div>}
 				{loading && <div className='text-secondary py-6 text-center text-sm'>加载中...</div>}
 			</div>
 
 			<motion.div
 				initial={{ opacity: 0, scale: 0.6 }}
 				animate={{ opacity: 1, scale: 1 }}
-				className='absolute top-4 right-6 flex items-center gap-2 max-sm:hidden'>
+				className='absolute top-4 right-6 flex items-center gap-3 max-sm:hidden'>
 				{editMode ? (
 					<>
 						{enableCategories && (
@@ -498,7 +483,7 @@ export default function DiaryPage() {
 								whileTap={{ scale: 0.95 }}
 								onClick={() => setCategoryModalOpen(true)}
 								disabled={saving}
-								className='backdrop-blur-sm rounded-xl border bg-white/60 px-4 py-2 text-sm transition-colors hover:bg-white/80'>
+								className='rounded-xl border bg-white/60 px-4 py-2 text-sm transition-colors hover:bg-white/80'>
 								分类
 							</motion.button>
 						)}
@@ -507,14 +492,14 @@ export default function DiaryPage() {
 							whileTap={{ scale: 0.95 }}
 							onClick={handleCancel}
 							disabled={saving}
-							className='backdrop-blur-sm rounded-xl border bg-white/60 px-6 py-2 text-sm'>
+							className='rounded-xl border bg-white/60 px-6 py-2 text-sm'>
 							取消
 						</motion.button>
 						<motion.button
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={selectedCount === editableItems.length ? handleDeselectAll : handleSelectAll}
-							className='backdrop-blur-sm rounded-xl border bg-white/60 px-4 py-2 text-sm transition-colors hover:bg-white/80'>
+							className='rounded-xl border bg-white/60 px-4 py-2 text-sm transition-colors hover:bg-white/80'>
 							{selectedCount === editableItems.length ? '取消全选' : '全选'}
 						</motion.button>
 						<motion.button
@@ -530,41 +515,15 @@ export default function DiaryPage() {
 						</motion.button>
 					</>
 				) : (
-					<>
+					!hideEditButton && (
 						<motion.button
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
-							onClick={handleImportMd}
-							className='backdrop-blur-sm bg-card rounded-xl border px-4 py-2 text-sm transition-colors hover:bg-white/80'>
-							<FileText className='mr-2 inline h-4 w-4' />
-							导入
+							onClick={toggleEditMode}
+							className='bg-card rounded-xl border px-6 py-2 text-sm backdrop-blur-sm transition-colors hover:bg-white/80'>
+							编辑
 						</motion.button>
-						<motion.button
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-							onClick={handleOpenCalendar}
-							className='backdrop-blur-sm bg-card rounded-xl border px-4 py-2 text-sm transition-colors hover:bg-white/80'>
-							<Calendar className='mr-2 inline h-4 w-4' />
-							日历
-						</motion.button>
-						<motion.button
-							whileHover={{ scale: 1.05 }}
-							whileTap={{ scale: 0.95 }}
-							onClick={() => handleNewDiary()}
-							className='brand-btn inline-flex items-center gap-2 px-4 py-2'>
-							<Plus className='h-4 w-4' />
-							写日记
-						</motion.button>
-						{!hideEditButton && (
-							<motion.button
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
-								onClick={toggleEditMode}
-								className='backdrop-blur-sm bg-card rounded-xl border px-6 py-2 text-sm transition-colors hover:bg-white/80'>
-								编辑
-							</motion.button>
-						)}
-					</>
+					)
 				)}
 			</motion.div>
 
@@ -581,13 +540,6 @@ export default function DiaryPage() {
 				onReorderCategories={handleReorderCategories}
 				editableItems={editableItems}
 				onAssignCategory={handleAssignCategory}
-			/>
-
-			<CalendarModal
-				open={calendarModalOpen}
-				onClose={() => setCalendarModalOpen(false)}
-				onSelectDate={handleSelectDate}
-				existingDates={existingDates}
 			/>
 		</>
 	)

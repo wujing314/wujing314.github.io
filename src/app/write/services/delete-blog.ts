@@ -3,9 +3,8 @@ import { getAuthToken } from '@/lib/auth'
 import { GITHUB_CONFIG } from '@/consts'
 import { createBlob, createCommit, createTree, getRef, listRepoFilesRecursive, toBase64Utf8, TreeItem, updateRef } from '@/lib/github-client'
 import { removeBlogFromIndex } from '@/lib/blog-index'
-import { saveToLocalStorage, loadFromLocalStorage } from '@/lib/local-storage'
 
-async function deleteBlogOnline(slug: string): Promise<void> {
+export async function deleteBlog(slug: string): Promise<void> {
 	if (!slug) throw new Error('需要 slug')
 
 	const token = await getAuthToken()
@@ -47,28 +46,4 @@ async function deleteBlogOnline(slug: string): Promise<void> {
 	await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
 
 	toast.success('删除成功！请等待页面部署后刷新')
-}
-
-async function deleteBlogOffline(slug: string): Promise<void> {
-	if (!slug) throw new Error('需要 slug')
-
-	toast.info('正在删除本地文章...')
-
-	const existingBlogs = loadFromLocalStorage<any[]>('blogs', [])
-	const filteredBlogs = existingBlogs.filter(b => b.slug !== slug)
-	
-	if (filteredBlogs.length === existingBlogs.length) {
-		throw new Error('文章不存在或已删除')
-	}
-
-	saveToLocalStorage('blogs', filteredBlogs)
-	toast.success('已从本地删除！')
-}
-
-export async function deleteBlog(slug: string): Promise<void> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		await deleteBlogOffline(slug)
-	} else {
-		await deleteBlogOnline(slug)
-	}
 }

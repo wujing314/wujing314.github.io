@@ -7,30 +7,10 @@ import { WriteSidebar } from './components/sidebar'
 import { WriteActions } from './components/actions'
 import { WritePreview } from './components/preview'
 import { useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
 
 export default function WritePage() {
-	const { form, cover, reset, updateForm } = useWriteStore()
-	const searchParams = useSearchParams()
-	
-	useEffect(() => {
-		reset()
-		
-		const date = searchParams.get('date')
-		const title = searchParams.get('title')
-		const importContent = searchParams.get('import')
-		
-		if (date) {
-			updateForm({ date: `${date}T00:00` })
-		}
-		if (title) {
-			updateForm({ title: decodeURIComponent(title) })
-		}
-		if (importContent) {
-			updateForm({ md: decodeURIComponent(importContent) })
-		}
-	}, [])
-	
+	const { form, cover, reset } = useWriteStore()
+	useEffect(() => reset(), [])
 	const { isPreview, closePreview } = usePreviewStore()
 
 	const coverPreviewUrl = cover ? (cover.type === 'url' ? cover.url : cover.previewUrl) : null

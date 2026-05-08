@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { useWriteStore } from '../stores/write-store'
 import { usePreviewStore } from '../stores/preview-store'
@@ -8,13 +9,18 @@ import { usePublish } from '../hooks/use-publish'
 export function WriteActions() {
 	const { loading, mode, form, loadBlogForEdit, originalSlug, updateForm } = useWriteStore()
 	const { openPreview } = usePreviewStore()
-	const { onPublish, onDelete } = usePublish()
+	const { isAuth, onChoosePrivateKey, onPublish, onDelete } = usePublish()
 	const [saving, setSaving] = useState(false)
-	const mdInputRef = typeof window !== 'undefined' ? { current: document.createElement('input') } : { current: null }
+	const keyInputRef = useRef<HTMLInputElement>(null)
+	const mdInputRef = useRef<HTMLInputElement>(null)
 	const router = useRouter()
 
-	const handleLoginOrPublish = () => {
-		onPublish()
+	const handleImportOrPublish = () => {
+		if (!isAuth) {
+			keyInputRef.current?.click()
+		} else {
+			onPublish()
+		}
 	}
 
 	const handleCancel = () => {
@@ -28,9 +34,13 @@ export function WriteActions() {
 		}
 	}
 
-	const buttonText = mode === 'edit' ? '更新' : '发布'
+	const buttonText = isAuth ? (mode === 'edit' ? '更新' : '发布') : '输入密码'
 
 	const handleDelete = () => {
+		if (!isAuth) {
+			toast.info('请先输入密码')
+			return
+		}
 		const confirmMsg = form?.title ? `确定删除《${form.title}》吗？该操作不可恢复。` : '确定删除当前文章吗？该操作不可恢复。'
 		if (window.confirm(confirmMsg)) {
 			onDelete()
@@ -38,9 +48,7 @@ export function WriteActions() {
 	}
 
 	const handleImportMd = () => {
-		if (mdInputRef.current) {
-			mdInputRef.current.click()
-		}
+		mdInputRef.current?.click()
 	}
 
 	const handleMdFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +58,9 @@ export function WriteActions() {
 		try {
 			const text = await file.text()
 			updateForm({ md: text })
+			toast.success('已导入 Markdown 文件')
 		} catch (error) {
+			toast.error('导入失败，请重试')
 		} finally {
 			if (e.currentTarget) e.currentTarget.value = ''
 		}
@@ -58,15 +68,18 @@ export function WriteActions() {
 
 	return (
 		<>
-			{typeof window !== 'undefined' && (
-				<input 
-					ref={mdInputRef as React.MutableRefObject<HTMLInputElement>} 
-					type='file' 
-					accept='.md' 
-					className='hidden' 
-					onChange={handleMdFileChange} 
-				/>
-			)}
+			<input
+				ref={keyInputRef}
+				type='file'
+				accept='.pem'
+				className='hidden'
+				onChange={async e => {
+					const f = e.target.files?.[0]
+					if (f) await onChoosePrivateKey(f)
+					if (e.currentTarget) e.currentTarget.value = ''
+				}}
+			/>
+			<input ref={mdInputRef} type='file' accept='.md' className='hidden' onChange={handleMdFileChange} />
 
 			<ul className='absolute top-4 right-6 flex items-center gap-2'>
 				{mode === 'edit' && (
@@ -124,7 +137,7 @@ export function WriteActions() {
 					whileTap={{ scale: 0.95 }}
 					className='brand-btn px-6'
 					disabled={loading}
-					onClick={handleLoginOrPublish}>
+					onClick={handleImportOrPublish}>
 					{buttonText}
 				</motion.button>
 			</ul>

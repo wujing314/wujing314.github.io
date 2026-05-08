@@ -5,35 +5,122 @@ import { motion } from 'motion/react'
 import { toast } from 'sonner'
 import { useMarkdownRender } from '@/hooks/use-markdown-render'
 import { pushAbout, type AboutData } from './services/push-about'
+import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
-import { loadFromLocalStorage } from '@/lib/local-storage'
 import LikeButton from '@/components/like-button'
 import GithubSVG from '@/svgs/github.svg'
-import LinkedinSVG from '@/svgs/linkedin.svg'
-import MailSVG from '@/svgs/email.svg'
-import BilibiliSVG from '@/svgs/哔哩哔哩.svg'
-import JuejinSVG from '@/svgs/juejin.svg'
-import initialData from './list.json'
-
-const loadAboutData = (): AboutData => {
-	const savedData = loadFromLocalStorage<AboutData>('about', null)
-	return savedData || initialData
-}
+import { LoginModal } from '@/components/login-modal'
 
 export default function Page() {
-	const [data, setData] = useState<AboutData>(loadAboutData)
-	const [originalData, setOriginalData] = useState<AboutData>(loadAboutData)
+	const [data, setData] = useState<AboutData>({} as AboutData)
+	const [originalData, setOriginalData] = useState<AboutData>({} as AboutData)
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
 	const [isPreviewMode, setIsPreviewMode] = useState(false)
-	const [activeSocial, setActiveSocial] = useState<string | null>(null)
 
+	const { isAuth, setPassword } = useAuthStore()
 	const { siteContent } = useConfigStore()
-	const { content, loading } = useMarkdownRender(data.content)
+	const { content, loading } = useMarkdownRender(data.content || '')
 	const hideEditButton = siteContent.hideEditButton ?? false
 
+	// Initialize data if not loaded
+	useEffect(() => {
+		const initialData = {
+			title: '吴晶 - 个人简历',
+			description: '电气工程及其自动化专业 | 专注单片机与物联网技术',
+			content: `# 👋 你好，我是吴晶
+
+## 📋 基本信息
+- **姓名**: 吴晶
+- **性别**: 男 | **年龄**: 20岁
+- **就读学校**: 广州航海学院
+- **专业班级**: 电气211
+- **出生日期**: 2003-08-25
+- **联系电话**: 13427784352
+- **出生地址**: 湖南
+- **期望岗位**: 嵌入式开发工程师、物联网技术工程师
+
+## 🎯 技能特长
+
+### 硬件开发
+- **微控制器**: STM32、ESP系列、51单片机
+- **PCB设计**: PBC板制作焊接、电路设计
+- **传感器应用**: 各类传感器数据采集与控制
+- **电源管理**: 锂电池供电系统、电压调节
+
+### 软件开发
+- **编程语言**: C/C++、Python、JavaScript
+- **Web开发**: HTML+CSS+JS网页设计与服务器搭建
+- **数据库**: SQL基础应用
+- **人工智能**: AI工具应用与实践
+
+### 办公技能
+- **WPS JS宏**: 办公软件自动化处理
+- **SolidWorks**: 3D建模与设计
+- **PLC控制**: 工业自动化系统集成
+
+## 📚 学习经历
+
+### 大一 - 大二上
+**探索阶段**
+接触e语言、lua语言，制作游戏脚本、刷课辅助等工具，加强编程逻辑思维训练。
+
+### 大二下
+**入门阶段**
+从51单片机入门，深入学习STM32单片机知识，使用keil5制作小项目检验学习成果。
+
+### 大二下 - 大三
+**发展阶段**
+学习PLC控制技术，深入掌握PLC应用，接触ESP系列单片机进入物联网领域。
+
+### 大三 - 未来
+**优化提升**
+接触并使用人工智能提高工作学习效率，学习更多专业知识，加入优质团队共同进步。
+
+## 🏆 获奖经历
+- **蓝桥杯省三等奖**
+- **团队程序设计天梯赛团队省二等奖，个人全国三等奖**
+- **校赛三等奖**
+
+## 🛠️ 项目经验
+- **智能小车项目**: 基于STM32+nrf24l01的摇杆遥控小车
+- **PLC控制系统**: 三层电梯控制系统、多病床呼叫系统
+- **物联网应用**: ESP系列单片机与网络通信技术结合的智能家居控制系统
+
+## 🎮 兴趣爱好
+- **科学探索**: 对理科有浓厚兴趣，特别是数学物理领域
+- **乒乓球**: 业余运动爱好
+- **游戏开发**: 脚本程序制作与自动化工具开发
+- **人工智能**: 关注AI技术发展与应用
+
+## 📞 联系方式
+- **微信**: 13427784352
+- **QQ**: 2099915224
+- **邮箱**: 2099915224@qq.com
+- **宿舍地址**: 南七314
+
+## 🔗 社交媒体
+- **GitHub**: [github.com/wujing-dev](https://github.com/wujing-dev)
+- **CSDN**: [blog.csdn.net/wujing_dev](https://blog.csdn.net/wujing_dev)
+- **Bilibili**: [space.bilibili.com/wujing-tech](https://space.bilibili.com/wujing-tech)
+- **LinkedIn**: 职业发展网络
+
+---
+
+*很高兴认识你！希望有机会一起交流学习。*`
+		}
+		if (!data.title) {
+			setData(initialData)
+			setOriginalData(initialData)
+		}
+	}, [])
+
 	const handleSaveClick = () => {
-		void handleSave()
+		if (!isAuth) {
+			setIsEditMode(true) // This will trigger the login modal
+			return
+		}
+		handleSave()
 	}
 
 	const handleEnterEditMode = () => {
@@ -65,7 +152,7 @@ export default function Page() {
 		setIsPreviewMode(false)
 	}
 
-	const buttonText = '保存'
+	const buttonText = isAuth ? '保存' : '输入密码'
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -82,282 +169,248 @@ export default function Page() {
 		}
 	}, [isEditMode])
 
-	const socialLinks = [
-		{ name: 'GitHub', url: 'https://github.com', icon: GithubSVG, color: 'from-gray-500 to-gray-600', label: '查看我的GitHub' },
-		{ name: 'Bilibili', url: 'https://bilibili.com', icon: BilibiliSVG, color: 'from-pink-500 to-purple-500', label: '访问我的B站' },
-		{ name: 'CSDN', url: 'https://csdn.net', icon: JuejinSVG, color: 'from-orange-500 to-red-500', label: '访问我的CSDN' },
-		{ name: 'QQ邮箱', url: 'mailto:209915224@qq.com', icon: MailSVG, color: 'from-blue-500 to-cyan-500', label: '发送邮件' },
-	]
-
-	const skills = ['C/C++', 'Python', 'STM32', 'DSP', 'OpenCV', 'ROS', 'Linux', 'PLC']
-
-	const projects = [
-		{ name: '机械臂工程车', desc: '基于STM32的智能机械臂控制系统', stars: 42, url: '#' },
-		{ name: '自动行驶小车', desc: 'MSP430单片机控制的自动循迹小车', stars: 89, url: '#' },
-		{ name: '指纹模块开发', desc: '基于TM1026M指纹模块的上位机系统', stars: 23, url: '#' },
-		{ name: '工程车云台', desc: 'OpenMV视觉识别与云台控制', stars: 156, url: '#' },
-	]
-
-	const contributions = [0, 2, 5, 3, 1, 4, 6, 2, 3, 5, 4, 2, 1, 3, 5, 7, 4, 2, 1, 3, 4, 6, 2, 3, 5, 1, 2, 4, 3, 5]
-
 	return (
 		<>
-			<div className='flex flex-col items-center px-6 pt-24 pb-16 max-sm:px-4'>
-				<div className='w-full max-w-5xl'>
-					{isEditMode ? (
-						isPreviewMode ? (
-							<div className='space-y-6'>
-								<div className='text-center'>
-									<h1 className='mb-4 text-4xl font-bold'>{data.title || '标题预览'}</h1>
-									<p className='text-secondary text-lg'>{data.description || '描述预览'}</p>
-								</div>
-								{loading ? (
-									<div className='text-secondary text-center'>预览渲染中...</div>
-								) : (
-									<div className='card relative p-6'>
-										<div className='prose prose-sm max-w-none'>{content}</div>
-									</div>
-								)}
-							</div>
-						) : (
-							<div className='space-y-6'>
-								<div className='space-y-4'>
-									<input
-										type='text'
-										placeholder='标题'
-										className='w-full px-4 py-3 text-center text-2xl font-bold'
-										value={data.title}
-										onChange={e => setData({ ...data, title: e.target.value })}
-									/>
-									<input
-										type='text'
-										placeholder='描述'
-										className='w-full px-4 py-3 text-center text-lg'
-										value={data.description}
-										onChange={e => setData({ ...data, description: e.target.value })}
-									/>
-								</div>
-								<div className='card relative'>
-									<textarea
-										placeholder='Markdown 内容'
-										className='min-h-[500px] w-full resize-none text-sm'
-										value={data.content}
-										onChange={e => setData({ ...data, content: e.target.value })}
-									/>
-								</div>
-							</div>
-						)
-					) : (
-						<div className='grid grid-cols-1 lg:grid-cols-12 gap-8'>
-							<motion.aside
-								initial={{ opacity: 0, x: -30 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ duration: 0.5 }}
-								className='lg:col-span-4'
-							>
-								<div className='space-y-6'>
-									<motion.div
-										whileHover={{ scale: 1.02 }}
-										className='relative overflow-hidden rounded-2xl border border-purple-500/20 bg-white/10 backdrop-blur-xl shadow-xl shadow-purple-500/10'
-									>
-										<div className='absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-pink-500/10' />
-										<div className='absolute top-0 right-0 h-32 w-32 -translate-y-1/2 translate-x-1/2 rounded-full bg-purple-500/20 blur-3xl' />
-										<div className='relative p-6'>
-											<div className='flex flex-col items-center'>
-												<div className='relative mb-4'>
-													<div className='h-32 w-32 overflow-hidden rounded-full border-3 border-purple-500/40 shadow-lg shadow-purple-500/30'>
-														<img
-															src='https://a0ai.marscode.cn/api/ide/v1/text_to_image?prompt=anime%20style%20professional%20developer%20portrait%20purple%20theme%20avatar&image_size=square'
-															alt='Avatar'
-															className='h-full w-full object-cover'
-														/>
-													</div>
-													<div className='absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-green-500 p-2 shadow-lg animate-pulse'>
-														<div className='h-3 w-3 rounded-full bg-white' />
-													</div>
-												</div>
-												<h2 className='text-2xl font-bold text-white'>{data.title}</h2>
-												<p className='text-purple-300/80 text-sm'>{data.description}</p>
-												<div className='mt-4 flex gap-2'>
-													<motion.a
-														href='mailto:example@email.com'
-														whileHover={{ scale: 1.05, y: -2 }}
-														className='flex h-10 w-10 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/20 text-purple-300 backdrop-blur-md transition-all hover:bg-purple-500/40'
-													>
-														<MailSVG className='h-5 w-5' />
-													</motion.a>
-													<motion.a
-														href='https://github.com'
-														target='_blank'
-														rel='noreferrer'
-														whileHover={{ scale: 1.05, y: -2 }}
-														className='flex h-10 w-10 items-center justify-center rounded-full border border-purple-500/30 bg-purple-500/20 text-purple-300 backdrop-blur-md transition-all hover:bg-purple-500/40'
-													>
-														<GithubSVG className='h-5 w-5' />
-													</motion.a>
-												</div>
-											</div>
-										</div>
-									</motion.div>
+			{/* Login Modal for direct password input */}
+			<LoginModal
+				open={!isAuth && isEditMode}
+				onClose={() => setIsEditMode(false)}
+				onSuccess={() => setIsEditMode(true)}
+			/>
 
-									<div className='rounded-xl border border-purple-500/20 bg-white/5 backdrop-blur-md p-5'>
-										<h3 className='mb-4 text-sm font-medium text-purple-300'>社交平台</h3>
-										<div className='space-y-2'>
-											{socialLinks.map((social, index) => {
-												const IconComponent = social.icon
-												return (
-													<motion.a
-														key={social.name}
-														href={social.url}
-														target='_blank'
-														rel='noreferrer'
-														initial={{ opacity: 0, x: -10 }}
-														animate={{ opacity: 1, x: 0 }}
-														transition={{ delay: index * 0.1 }}
-														whileHover={{ x: 5, scale: 1.02 }}
-														onMouseEnter={() => setActiveSocial(social.name)}
-														onMouseLeave={() => setActiveSocial(null)}
-														className={`flex items-center gap-3 rounded-lg border border-purple-500/10 bg-white/5 p-3 transition-all ${
-															activeSocial === social.name
-																? 'border-purple-500/40 bg-purple-500/10'
-																: 'hover:border-purple-500/30 hover:bg-white/10'
-														}`}
-													>
-														<div className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${social.color} p-2`}>
-															<IconComponent className='h-full w-full' />
-														</div>
-														<div className='flex-1'>
-															<div className='text-sm font-medium text-white'>{social.name}</div>
-															<div className='text-xs text-purple-400/60'>{social.label}</div>
-														</div>
-														<motion.div
-															initial={{ x: 0 }}
-															animate={{ x: activeSocial === social.name ? 5 : 0 }}
-															className='text-purple-400'
-														>
-															→
-														</motion.div>
-													</motion.a>
-												)
-											})}
-										</div>
-									</div>
-
-									<div className='rounded-xl border border-purple-500/20 bg-white/5 backdrop-blur-md p-5'>
-										<h3 className='mb-4 text-sm font-medium text-purple-300'>技术栈</h3>
-										<div className='flex flex-wrap gap-2'>
-											{skills.map((skill, index) => (
-												<motion.span
-													key={skill}
-													initial={{ opacity: 0, scale: 0.8 }}
-													animate={{ opacity: 1, scale: 1 }}
-													transition={{ delay: index * 0.05 }}
-													whileHover={{ scale: 1.1, y: -2 }}
-													className='rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 px-3 py-1.5 text-xs font-medium text-purple-200 cursor-default'
-												>
-													{skill}
-												</motion.span>
-											))}
-										</div>
-									</div>
-
-									<div className='rounded-xl border border-purple-500/20 bg-white/5 backdrop-blur-md p-5'>
-										<h3 className='mb-4 text-sm font-medium text-purple-300'>GitHub 活动</h3>
-										<div className='flex items-end justify-between gap-0.5 h-24'>
-											{contributions.map((count, index) => (
-												<motion.div
-													key={index}
-													initial={{ height: 0 }}
-													animate={{ height: `${Math.max(count * 6, 4)}px` }}
-													transition={{ delay: index * 0.02, duration: 0.3 }}
-													whileHover={{ scaleY: 1.1 }}
-													className='flex-1 rounded-t-sm bg-gradient-to-t from-purple-500/60 to-pink-500/40 cursor-pointer hover:from-purple-400/80 hover:to-pink-400/60'
-													title={`${count} contributions`}
-												/>
-											))}
-										</div>
-										<div className='mt-2 flex justify-between text-[10px] text-purple-400/50'>
-											<span>1月</span>
-											<span>12月</span>
-										</div>
-									</div>
-								</div>
-							</motion.aside>
-
-							<motion.main
-								initial={{ opacity: 0, x: 30 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ duration: 0.5, delay: 0.1 }}
-								className='lg:col-span-8 space-y-6'
-							>
-								<div className='relative overflow-hidden rounded-2xl border border-purple-500/20 bg-white/10 backdrop-blur-xl shadow-xl shadow-purple-500/10'>
-									<div className='absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5' />
-									<div className='relative p-8'>
-										<h2 className='mb-4 text-2xl font-bold text-white'>个人介绍</h2>
-										{loading ? (
-											<div className='flex items-center justify-center py-8'>
-												<div className='h-8 w-8 animate-spin rounded-full border-2 border-purple-500/30 border-t-purple-500' />
-											</div>
-										) : (
-											<div className='prose prose-lg max-w-none prose-purple'>
-												{content}
-											</div>
-										)}
-									</div>
-								</div>
-
-								<div className='relative overflow-hidden rounded-2xl border border-purple-500/20 bg-white/10 backdrop-blur-xl shadow-xl shadow-purple-500/10'>
-									<div className='absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5' />
-									<div className='relative p-6'>
-										<h2 className='mb-4 text-xl font-bold text-white'>最近项目</h2>
-										<div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-											{projects.map((project, index) => (
-												<motion.a
-													key={project.name}
-													href={project.url}
-													initial={{ opacity: 0, y: 10 }}
-													animate={{ opacity: 1, y: 0 }}
-													transition={{ delay: index * 0.1 }}
-													whileHover={{ y: -5 }}
-													className='group rounded-xl border border-purple-500/10 bg-white/5 p-4 transition-all hover:border-purple-500/30 hover:bg-white/10 cursor-pointer'
-												>
-													<div className='flex items-start justify-between'>
-														<div>
-															<h3 className='font-medium text-white group-hover:text-purple-300 transition-colors'>
-																{project.name}
-															</h3>
-															<p className='mt-1 text-sm text-purple-400/60'>{project.desc}</p>
-														</div>
-														<div className='rounded-full bg-purple-500/20 px-3 py-1 text-sm text-purple-300'>
-															⭐ {project.stars}
-														</div>
-													</div>
-													<motion.div
-														initial={{ width: 0 }}
-														whileHover={{ width: '100%' }}
-														className='mt-3 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500'
-													/>
-												</motion.a>
-											))}
-										</div>
-									</div>
-								</div>
-
-								<motion.div
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									transition={{ delay: 0.5 }}
-									className='text-center'
-								>
-									<p className='text-purple-400/60 text-sm'>
-										感谢你的访问，期待与你交流！
-									</p>
-									<LikeButton slug='about' delay={0} className='inline-block mt-4' />
-								</motion.div>
-							</motion.main>
+			<div className='flex flex-col lg:flex-row gap-8 px-6 pt-24 pb-12 max-sm:px-0'>
+				{/* Left Sidebar - Resume Style */}
+				<motion.div
+					initial={{ opacity: 0, x: -20 }}
+					animate={{ opacity: 1, x: 0 }}
+					transition={{ delay: 0.1 }}
+					className='lg:w-1/3 space-y-6'
+				>
+					{/* Avatar */}
+					<div className='card relative p-6 backdrop-blur-md bg-white/70 rounded-2xl shadow-lg border border-white/50'>
+						<div className='text-center'>
+							<img
+								src='/images/avatar.png'
+								alt='个人头像'
+								className='mx-auto w-32 h-32 rounded-full object-cover border-4 border-brand/20 shadow-lg'
+							/>
+							<h2 className='mt-4 text-2xl font-bold text-primary'>吴晶</h2>
+							<p className='text-secondary mt-2'>电气工程学生</p>
+							<p className='text-brand text-sm mt-1'>专注单片机与物联网技术</p>
 						</div>
-					)}
-				</div>
+					</div>
+
+					{/* Basic Info */}
+					<div className='card relative p-6 backdrop-blur-md bg-white/70 rounded-2xl shadow-lg border border-white/50'>
+						<h3 className='font-semibold text-primary mb-4 flex items-center'>
+							<svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+								<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' />
+							</svg>
+							基本信息
+						</h3>
+						<div className='space-y-3 text-sm'>
+							<div className='flex justify-between'>
+								<span className='text-secondary'>年龄:</span>
+								<span className='font-medium'>20岁</span>
+							</div>
+							<div className='flex justify-between'>
+								<span className='text-secondary'>学校:</span>
+								<span className='font-medium'>广州航海学院</span>
+							</div>
+							<div className='flex justify-between'>
+								<span className='text-secondary'>专业:</span>
+								<span className='font-medium'>电气211</span>
+							</div>
+							<div className='flex justify-between'>
+								<span className='text-secondary'>电话:</span>
+								<span className='font-medium'>13427784352</span>
+							</div>
+							<div className='flex justify-between'>
+								<span className='text-secondary'>邮箱:</span>
+								<span className='font-medium'>2099915224@qq.com</span>
+							</div>
+							<div className='flex justify-between'>
+								<span className='text-secondary'>地址:</span>
+								<span className='font-medium'>南七314</span>
+							</div>
+						</div>
+					</div>
+
+					{/* Social Media Links */}
+					<div className='card relative p-6 backdrop-blur-md bg-white/70 rounded-2xl shadow-lg border border-white/50'>
+						<h3 className='font-semibold text-primary mb-4 flex items-center'>
+							<svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+								<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 10V3L4 14h7v7l9-11h-7z' />
+							</svg>
+							社交媒体
+						</h3>
+						<div className='grid grid-cols-2 gap-3'>
+							<motion.a
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								href='https://github.com/wujing-dev'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='flex items-center justify-center p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors'
+								title='GitHub 个人主页'
+							>
+								<GithubSVG className='w-6 h-6' />
+							</motion.a>
+							<motion.a
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								href='https://blog.csdn.net/wujing_dev'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='flex items-center justify-center p-3 bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors'
+								title='CSDN 技术博客'
+							>
+								<div className='w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold'>C</div>
+							</motion.a>
+							<motion.a
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								href='https://space.bilibili.com/wujing-tech'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='flex items-center justify-center p-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors'
+								title='B站 技术分享'
+							>
+								<div className='w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold'>B</div>
+							</motion.a>
+							<motion.a
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								href='mailto:2099915224@qq.com'
+								className='flex items-center justify-center p-3 bg-green-50 hover:bg-green-100 rounded-xl transition-colors'
+								title='发送邮件'
+							>
+								<svg className='w-6 h-6 text-green-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
+								</svg>
+							</motion.a>
+						</div>
+					</div>
+
+					{/* Quick Stats */}
+					<div className='card relative p-6 backdrop-blur-md bg-white/70 rounded-2xl shadow-lg border border-white/50'>
+						<h3 className='font-semibold text-primary mb-4'>快速统计</h3>
+						<div className='space-y-3 text-sm'>
+							<div className='flex justify-between items-center'>
+								<span className='text-secondary'>学习年限</span>
+								<span className='font-bold text-brand'>3年+</span>
+							</div>
+							<div className='flex justify-between items-center'>
+								<span className='text-secondary'>项目经验</span>
+								<span className='font-bold text-brand'>10+个</span>
+							</div>
+							<div className='flex justify-between items-center'>
+								<span className='text-secondary'>获奖次数</span>
+								<span className='font-bold text-brand'>5次+</span>
+							</div>
+							<div className='flex justify-between items-center'>
+								<span className='text-secondary'>技能掌握</span>
+								<span className='font-bold text-brand'>20+项</span>
+							</div>
+						</div>
+					</div>
+				</motion.div>
+
+				{/* Main Content Area */}
+				<motion.div
+					initial={{ opacity: 0, x: 20 }}
+					animate={{ opacity: 1, x: 0 }}
+					transition={{ delay: 0.2 }}
+					className='lg:w-2/3'
+				>
+					<div className='w-full max-w-none'>
+						{isEditMode ? (
+							isPreviewMode ? (
+								<div className='space-y-6'>
+									<div className='text-center'>
+										<h1 className='mb-4 text-4xl font-bold'>{data.title || '标题预览'}</h1>
+										<p className='text-secondary text-lg'>{data.description || '描述预览'}</p>
+									</div>
+
+									{loading ? (
+										<div className='text-secondary text-center'>预览渲染中...</div>
+									) : (
+										<div className='card relative p-6'>
+											<div className='prose prose-sm max-w-none'>{content}</div>
+										</div>
+									)}
+								</div>
+							) : (
+								<div className='space-y-6'>
+									<div className='space-y-4'>
+										<input
+											type='text'
+											placeholder='标题'
+											className='w-full px-4 py-3 text-center text-2xl font-bold'
+											value={data.title}
+											onChange={e => setData({ ...data, title: e.target.value })}
+										/>
+										<input
+											type='text'
+											placeholder='描述'
+											className='w-full px-4 py-3 text-center text-lg'
+											value={data.description}
+											onChange={e => setData({ ...data, description: e.target.value })}
+										/>
+									</div>
+
+									<div className='card relative'>
+										<textarea
+											placeholder='Markdown 内容'
+											className='min-h-[500px] w-full resize-none text-sm'
+											value={data.content}
+											onChange={e => setData({ ...data, content: e.target.value })}
+										/>
+									</div>
+								</div>
+							)
+						) : (
+							<>
+								<motion.div
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									className='mb-8 text-center'
+								>
+									<h1 className='mb-4 text-4xl font-bold'>{data.title}</h1>
+									<p className='text-secondary text-lg'>{data.description}</p>
+								</motion.div>
+
+								{loading ? (
+									<div className='text-secondary text-center'>加载中...</div>
+								) : (
+									<motion.div
+										initial={{ opacity: 0, scale: 0.8 }}
+										animate={{ opacity: 1, scale: 1 }}
+										className='card relative p-6'
+									>
+										<div className='prose prose-sm max-w-none'>{content}</div>
+									</motion.div>
+								)}
+							</>
+						)}
+
+						<div className='mt-8 flex items-center justify-center gap-6'>
+							<motion.a
+								href='https://github.com/wujing-dev/2025-blog-public'
+								target='_blank'
+								rel='noreferrer'
+								initial={{ opacity: 0, scale: 0.6 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{ delay: 0.1 }}
+								className='bg-card flex h-[53px] w-[53px] items-center justify-center rounded-full border'
+							>
+								<GithubSVG />
+							</motion.a>
+
+							<LikeButton slug='open-source' delay={0} />
+						</div>
+					</div>
+				</motion.div>
 			</div>
 
 			<motion.div
@@ -372,7 +425,7 @@ export default function Page() {
 							whileTap={{ scale: 0.95 }}
 							onClick={handleCancel}
 							disabled={isSaving}
-							className='rounded-xl border border-purple-500/30 bg-purple-500/10 px-6 py-2 text-sm text-purple-200 backdrop-blur-md hover:bg-purple-500/20'
+							className='rounded-xl border bg-white/60 px-6 py-2 text-sm'
 						>
 							取消
 						</motion.button>
@@ -381,7 +434,7 @@ export default function Page() {
 							whileTap={{ scale: 0.95 }}
 							onClick={() => setIsPreviewMode(prev => !prev)}
 							disabled={isSaving}
-							className='rounded-xl border border-purple-500/30 bg-purple-500/10 px-6 py-2 text-sm text-purple-200 backdrop-blur-md hover:bg-purple-500/20'
+							className={`rounded-xl border bg-white/60 px-6 py-2 text-sm`}
 						>
 							{isPreviewMode ? '继续编辑' : '预览'}
 						</motion.button>
@@ -390,7 +443,7 @@ export default function Page() {
 							whileTap={{ scale: 0.95 }}
 							onClick={handleSaveClick}
 							disabled={isSaving}
-							className='rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-2 text-sm font-medium text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50'
+							className='brand-btn px-6'
 						>
 							{isSaving ? '保存中...' : buttonText}
 						</motion.button>
@@ -401,7 +454,7 @@ export default function Page() {
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={handleEnterEditMode}
-							className='rounded-xl border border-purple-500/30 bg-purple-500/10 px-6 py-2 text-sm text-purple-200 backdrop-blur-md transition-all hover:bg-purple-500/20'
+							className='rounded-xl border bg-white/60 px-6 py-2 text-sm backdrop-blur-sm transition-colors hover:bg-white/80'
 						>
 							编辑
 						</motion.button>

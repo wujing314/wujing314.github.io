@@ -1,7 +1,6 @@
 import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, type TreeItem } from '@/lib/github-client'
 import { getAuthToken } from '@/lib/auth'
 import { GITHUB_CONFIG } from '@/consts'
-import { saveToLocalStorage } from '@/lib/local-storage'
 import { toast } from 'sonner'
 
 export type AboutData = {
@@ -10,7 +9,7 @@ export type AboutData = {
 	content: string
 }
 
-async function pushAboutOnline(data: AboutData): Promise<void> {
+export async function pushAbout(data: AboutData): Promise<void> {
 	const token = await getAuthToken()
 
 	toast.info('正在获取分支信息...')
@@ -44,16 +43,3 @@ async function pushAboutOnline(data: AboutData): Promise<void> {
 	toast.success('发布成功！')
 }
 
-async function pushAboutOffline(data: AboutData): Promise<void> {
-	toast.info('正在保存到本地...')
-	saveToLocalStorage('about', data)
-	toast.success('已保存到本地！')
-}
-
-export async function pushAbout(data: AboutData): Promise<void> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		await pushAboutOffline(data)
-	} else {
-		await pushAboutOnline(data)
-	}
-}

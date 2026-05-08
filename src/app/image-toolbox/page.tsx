@@ -81,15 +81,25 @@ export default function Page() {
 	const [batchConverting, setBatchConverting] = useState(false)
 	const [compareIndex, setCompareIndex] = useState<number | null>(null)
 	const [isDragging, setIsDragging] = useState(false)
+
 	const hasImages = images.length > 0
 	const hasConvertible = images.length > 0
 	const hasConverted = images.some(item => !!item.converted)
-	const imagesRef = useRef<SelectedImage[]>([])
-	const dragCounterRef = useRef(0)
 
+	// Clean up URLs when component unmounts or images change
 	useEffect(() => {
-		imagesRef.current = images
-	}, [images])
+		return () => {
+			// Clean up preview URLs
+			images.forEach(item => {
+				if (item.preview) {
+					URL.revokeObjectURL(item.preview)
+				}
+				if (item.converted?.url) {
+					URL.revokeObjectURL(item.converted.url)
+				}
+			})
+		}
+	}, [])
 
 	const handleFiles = useCallback(async (fileList: FileList | null) => {
 		if (!fileList?.length) return

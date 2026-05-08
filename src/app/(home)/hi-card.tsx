@@ -23,7 +23,7 @@ export default function HiCard() {
 	const { cardStyles, siteContent } = useConfigStore()
 	const greeting = getGreeting()
 	const styles = cardStyles.hiCard
-	const username = siteContent.meta.username || 'Suni'
+	const username = siteContent.meta.username || '吴晶'
 
 	const x = styles.offsetX !== null ? center.x + styles.offsetX : center.x - styles.width / 2
 	const y = styles.offsetY !== null ? center.y + styles.offsetY : center.y - styles.height / 2
@@ -51,14 +51,10 @@ export default function HiCard() {
 					<img src='/images/avatar.png' className='mx-auto rounded-full' style={{ width: 120, height: 120, boxShadow: ' 0 16px 32px -5px #E2D9CE' }} />
 				</Link>
 				<h1 className='font-averia mt-3 text-2xl'>
-					{greeting} <br /> I'm <span className='text-linear text-[32px]'>{username}</span>
+					{greeting} <br /> I'm <span className='text-linear text-[32px]'>{username}</span> , <br /> Nice to meet you!
 				</h1>
-				<p className='mt-2 text-sm text-secondary'>
-					控制工程硕士研究生 <br />
-					专注嵌入式与自动化开发
-				</p>
-				<p className='mt-3 text-xs text-secondary/70'>
-					记录生活 · 分享技术 · 探索未知
+				<p className='mt-2 text-secondary text-sm max-w-xs mx-auto leading-relaxed'>
+					电气工程学生 | 专注单片机与物联网技术
 				</p>
 			</Card>
 		</HomeDraggableLayer>

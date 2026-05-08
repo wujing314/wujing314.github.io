@@ -1,16 +1,16 @@
 import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, type TreeItem } from '@/lib/github-client'
 import { getAuthToken } from '@/lib/auth'
 import { GITHUB_CONFIG } from '@/consts'
+import { saveToLocalStorage } from '@/lib/local-storage'
 import { toast } from 'sonner'
 import { fileToBase64NoPrefix } from '@/lib/file-utils'
-import { saveToLocalStorage } from '@/lib/local-storage'
 import type { SiteContent, CardStyles } from '../stores/config-store'
 import type { FileItem, ArtImageUploads, SocialButtonImageUploads, BackgroundImageUploads } from '../config-dialog/site-settings'
 
 type ArtImageConfig = SiteContent['artImages'][number]
 type BackgroundImageConfig = SiteContent['backgroundImages'][number]
 
-async function pushSiteContentOnline(
+export async function pushSiteContent(
 	siteContent: SiteContent,
 	cardStyles: CardStyles,
 	faviconItem?: FileItem | null,
@@ -21,6 +21,11 @@ async function pushSiteContentOnline(
 	removedBackgroundImages?: BackgroundImageConfig[],
 	socialButtonImageUploads?: SocialButtonImageUploads
 ): Promise<void> {
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		await pushSiteContentOffline(siteContent, cardStyles)
+		return
+	}
+
 	const token = await getAuthToken()
 
 	toast.info('正在获取分支信息...')
@@ -33,6 +38,7 @@ async function pushSiteContentOnline(
 
 	const treeItems: TreeItem[] = []
 
+	// Handle favicon upload
 	if (faviconItem?.type === 'file') {
 		toast.info('正在上传 Favicon...')
 		const contentBase64 = await fileToBase64NoPrefix(faviconItem.file)
@@ -45,6 +51,7 @@ async function pushSiteContentOnline(
 		})
 	}
 
+	// Handle avatar upload
 	if (avatarItem?.type === 'file') {
 		toast.info('正在上传 Avatar...')
 		const contentBase64 = await fileToBase64NoPrefix(avatarItem.file)
@@ -57,6 +64,7 @@ async function pushSiteContentOnline(
 		})
 	}
 
+	// Handle art images upload
 	if (artImageUploads) {
 		for (const [id, item] of Object.entries(artImageUploads)) {
 			if (item.type !== 'file') continue
@@ -64,6 +72,7 @@ async function pushSiteContentOnline(
 			const artConfig = siteContent.artImages?.find(art => art.id === id)
 			if (!artConfig) continue
 
+			// Ensure blob is saved under public directory while keeping URL as /images/...
 			const normalizedUrlPath = artConfig.url.startsWith('/') ? artConfig.url : `/${artConfig.url}`
 			const path = `public${normalizedUrlPath}`
 			if (!path) continue
@@ -80,6 +89,7 @@ async function pushSiteContentOnline(
 		}
 	}
 
+	// Handle art images deletion
 	if (removedArtImages && removedArtImages.length > 0) {
 		for (const art of removedArtImages) {
 			const normalizedUrlPath = art.url.startsWith('/') ? art.url : `/${art.url}`
@@ -93,6 +103,7 @@ async function pushSiteContentOnline(
 		}
 	}
 
+	// Handle background images upload
 	if (backgroundImageUploads) {
 		for (const [id, item] of Object.entries(backgroundImageUploads)) {
 			if (item.type !== 'file') continue
@@ -100,6 +111,7 @@ async function pushSiteContentOnline(
 			const bgConfig = siteContent.backgroundImages?.find(bg => bg.id === id)
 			if (!bgConfig) continue
 
+			// Only upload if URL starts with /images/background/ (local file)
 			if (!bgConfig.url.startsWith('/images/background/')) continue
 
 			const normalizedUrlPath = bgConfig.url.startsWith('/') ? bgConfig.url : `/${bgConfig.url}`
@@ -118,8 +130,10 @@ async function pushSiteContentOnline(
 		}
 	}
 
+	// Handle background images deletion
 	if (removedBackgroundImages && removedBackgroundImages.length > 0) {
 		for (const bg of removedBackgroundImages) {
+			// Only delete if URL starts with /images/background/ (local file)
 			if (!bg.url.startsWith('/images/background/')) continue
 
 			const normalizedUrlPath = bg.url.startsWith('/') ? bg.url : `/${bg.url}`
@@ -133,6 +147,7 @@ async function pushSiteContentOnline(
 		}
 	}
 
+	// Handle social button images upload
 	if (socialButtonImageUploads) {
 		for (const [buttonId, item] of Object.entries(socialButtonImageUploads)) {
 			if (item.type !== 'file') continue
@@ -140,6 +155,7 @@ async function pushSiteContentOnline(
 			const button = siteContent.socialButtons?.find(btn => btn.id === buttonId)
 			if (!button) continue
 
+			// Only upload if URL starts with /images/social-buttons/ (local file)
 			if (!button.value.startsWith('/images/social-buttons/')) continue
 
 			const normalizedUrlPath = button.value.startsWith('/') ? button.value : `/${button.value}`
@@ -158,6 +174,7 @@ async function pushSiteContentOnline(
 		}
 	}
 
+	// Handle site content JSON
 	const siteContentJson = JSON.stringify(siteContent, null, '\t')
 	const siteContentBlob = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, toBase64Utf8(siteContentJson), 'base64')
 	treeItems.push({
@@ -167,6 +184,7 @@ async function pushSiteContentOnline(
 		sha: siteContentBlob.sha
 	})
 
+	// Handle card styles JSON
 	const cardStylesJson = JSON.stringify(cardStyles, null, '\t')
 	const cardStylesBlob = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, toBase64Utf8(cardStylesJson), 'base64')
 	treeItems.push({
@@ -188,50 +206,16 @@ async function pushSiteContentOnline(
 	toast.success('保存成功！')
 }
 
-async function pushSiteContentOffline(
-	siteContent: SiteContent,
-	cardStyles: CardStyles,
-	faviconItem?: FileItem | null,
-	avatarItem?: FileItem | null
-): Promise<void> {
+// ==================== 离线模式 ====================
+
+async function pushSiteContentOffline(siteContent: SiteContent, cardStyles: CardStyles): Promise<void> {
 	toast.info('正在保存到本地...')
 
-	const offlineData = {
-		siteContent,
-		cardStyles,
-		images: {} as Record<string, string>
-	}
+	// Save site content
+	saveToLocalStorage('site_content', siteContent)
 
-	if (faviconItem?.type === 'file') {
-		toast.info('正在保存 Favicon...')
-		const contentBase64 = await fileToBase64NoPrefix(faviconItem.file)
-		offlineData.images['favicon'] = `data:image/png;base64,${contentBase64}`
-	}
+	// Save card styles
+	saveToLocalStorage('card_styles', cardStyles)
 
-	if (avatarItem?.type === 'file') {
-		toast.info('正在保存 Avatar...')
-		const contentBase64 = await fileToBase64NoPrefix(avatarItem.file)
-		offlineData.images['avatar'] = `data:image/png;base64,${contentBase64}`
-	}
-
-	saveToLocalStorage('site_content', offlineData)
-	toast.success('已保存到本地！')
-}
-
-export async function pushSiteContent(
-	siteContent: SiteContent,
-	cardStyles: CardStyles,
-	faviconItem?: FileItem | null,
-	avatarItem?: FileItem | null,
-	artImageUploads?: ArtImageUploads,
-	removedArtImages?: ArtImageConfig[],
-	backgroundImageUploads?: BackgroundImageUploads,
-	removedBackgroundImages?: BackgroundImageConfig[],
-	socialButtonImageUploads?: SocialButtonImageUploads
-): Promise<void> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		await pushSiteContentOffline(siteContent, cardStyles, faviconItem, avatarItem)
-	} else {
-		await pushSiteContentOnline(siteContent, cardStyles, faviconItem, avatarItem, artImageUploads, removedArtImages, backgroundImageUploads, removedBackgroundImages, socialButtonImageUploads)
-	}
+	toast.success('设置已保存到本地存储！')
 }

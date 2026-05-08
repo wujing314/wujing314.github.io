@@ -1,70 +1,66 @@
 import { create } from 'zustand'
-import { clearAllAuthCache, getAuthToken as getToken, hasAuth as checkAuth, validatePassword, generateToken, saveTokenToCache, logout } from '@/lib/auth'
-import { toast } from 'sonner'
-
+import { clearAllAuthCache, getAuthToken as getToken, hasAuth as checkAuth, getPemFromCache, savePemToCache } from '@/lib/auth'
+import { useConfigStore } from '@/app/(home)/stores/config-store'
 interface AuthStore {
+	// State
 	isAuth: boolean
-	isChecking: boolean
+	password: string | null
+	privateKey: string | null
+	isDirectAuth: boolean
 
+	// Actions
 	login: (password: string) => boolean
 	logout: () => void
-	refreshAuthState: () => Promise<void>
-	getAuthToken: () => Promise<string>
-	clearAuth: () => void
+	setPassword: (password: string) => void
+	setPrivateKey: (key: string) => void
+	isChecking: boolean
 }
+
+const ADMIN_PASSWORD = 'admin123' // 设置管理员密码
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
 	isAuth: false,
-	isChecking: true,
+	password: null,
+	privateKey: null,
+	isDirectAuth: false,
+	isChecking: false,
 
 	login: (password: string) => {
-		if (validatePassword(password)) {
-			const token = generateToken()
-			saveTokenToCache(token)
-			set({ isAuth: true })
-			toast.success('登录成功，欢迎回来！')
-			return true
-		}
-		toast.error('密码错误，请重试')
-		return false
+		const isValid = password === ADMIN_PASSWORD
+		set({
+			isAuth: isValid,
+			password: isValid ? password : null,
+			isDirectAuth: true
+		})
+		return isValid
 	},
 
 	logout: () => {
-		logout()
-		set({ isAuth: false })
+		set({
+			isAuth: false,
+			password: null,
+			privateKey: null,
+			isDirectAuth: false
+		})
 	},
 
-	refreshAuthState: async () => {
-		set({ isChecking: true })
-		try {
-			const auth = await checkAuth()
-			set({ isAuth: auth })
-		} catch (error) {
-			console.error('Failed to refresh auth state:', error)
-			set({ isAuth: false })
-		} finally {
-			set({ isChecking: false })
-		}
+	setPassword: (password: string) => {
+		set({ password })
 	},
 
-	getAuthToken: async () => {
-		try {
-			const token = await getToken()
-			await get().refreshAuthState()
-			return token
-		} catch (error: any) {
-			toast.error(error?.message || '获取认证失败')
-			throw error
-		}
-	},
-
-	clearAuth: () => {
-		clearAllAuthCache()
-		set({ isAuth: false })
+	setPrivateKey: (key: string) => {
+		set({ privateKey: key })
 	}
 }))
 
-// 初始化认证状态
+getPemFromCache().then((key) => {
+	if (key) {
+		useAuthStore.setState({ privateKey: key })
+	}
+})
+
 checkAuth().then((isAuth) => {
-	useAuthStore.setState({ isAuth, isChecking: false })
+	if (isAuth) {
+		useAuthStore.setState({ isAuth })
+	}
 })

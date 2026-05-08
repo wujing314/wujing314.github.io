@@ -1,9 +1,6 @@
 'use client'
 
 import useSWR from 'swr'
-import { useEffect, useState } from 'react'
-import { GITHUB_CONFIG } from '@/consts'
-import { loadFromLocalStorage } from '@/lib/local-storage'
 
 export type CategoriesConfig = {
 	categories: string[]
@@ -25,24 +22,15 @@ const fetcher = async (url: string): Promise<CategoriesConfig> => {
 }
 
 export function useCategories() {
-	const [localCategories, setLocalCategories] = useState<string[] | null>(null)
-	const { data: remoteData, error, isLoading } = useSWR<CategoriesConfig>('/blogs/categories.json', fetcher, {
+	const { data, error, isLoading } = useSWR<CategoriesConfig>('/blogs/categories.json', fetcher, {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: true
 	})
 
-	useEffect(() => {
-		if (GITHUB_CONFIG.OFFLINE_MODE) {
-			const savedCategories = loadFromLocalStorage<CategoriesConfig>('blogCategories', null)
-			setLocalCategories(savedCategories?.categories || null)
-		}
-	}, [])
-
-	const categories = GITHUB_CONFIG.OFFLINE_MODE && localCategories ? localCategories : (remoteData?.categories ?? [])
-
 	return {
-		categories,
+		categories: data?.categories ?? [],
 		loading: isLoading,
 		error
 	}
 }
+

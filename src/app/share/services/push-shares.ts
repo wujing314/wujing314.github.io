@@ -2,7 +2,6 @@ import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, 
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { getAuthToken } from '@/lib/auth'
 import { GITHUB_CONFIG } from '@/consts'
-import { saveToLocalStorage } from '@/lib/local-storage'
 import type { Share } from '../components/share-card'
 import type { LogoItem } from '../components/logo-upload-dialog'
 import { getFileExt } from '@/lib/utils'
@@ -13,9 +12,10 @@ export type PushSharesParams = {
 	logoItems?: Map<string, LogoItem>
 }
 
-async function pushSharesOnline(params: PushSharesParams): Promise<void> {
+export async function pushShares(params: PushSharesParams): Promise<void> {
 	const { shares, logoItems } = params
 
+	// 获取认证 token（自动从全局认证状态获取）
 	const token = await getAuthToken()
 
 	toast.info('正在获取分支信息...')
@@ -30,6 +30,7 @@ async function pushSharesOnline(params: PushSharesParams): Promise<void> {
 	const uploadedHashes = new Set<string>()
 	let updatedShares = [...shares]
 
+	// Process logo uploads
 	if (logoItems && logoItems.size > 0) {
 		toast.info('正在上传图标...')
 		for (const [url, logoItem] of logoItems.entries()) {
@@ -52,11 +53,13 @@ async function pushSharesOnline(params: PushSharesParams): Promise<void> {
 					uploadedHashes.add(hash)
 				}
 
+				// Update share logo URL
 				updatedShares = updatedShares.map(s => (s.url === url ? { ...s, logo: publicPath } : s))
 			}
 		}
 	}
 
+	// Create blob for shares list.json
 	const sharesJson = JSON.stringify(updatedShares, null, '\t')
 	const sharesBlob = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, toBase64Utf8(sharesJson), 'base64')
 	treeItems.push({
@@ -66,44 +69,18 @@ async function pushSharesOnline(params: PushSharesParams): Promise<void> {
 		sha: sharesBlob.sha
 	})
 
+	// Create tree
 	toast.info('正在创建文件树...')
 	const treeData = await createTree(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, treeItems, latestCommitSha)
 
+	// Create commit
 	toast.info('正在创建提交...')
 	const commitData = await createCommit(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, commitMessage, treeData.sha, [latestCommitSha])
 
+	// Update branch reference
 	toast.info('正在更新分支...')
 	await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
 
 	toast.success('发布成功！')
 }
 
-async function pushSharesOffline(params: PushSharesParams): Promise<void> {
-	const { shares, logoItems } = params
-
-	toast.info('正在保存到本地...')
-
-	let updatedShares = [...shares]
-
-	if (logoItems && logoItems.size > 0) {
-		toast.info('正在处理图标...')
-		for (const [url, logoItem] of logoItems.entries()) {
-			if (logoItem.type === 'file') {
-				const contentBase64 = await fileToBase64NoPrefix(logoItem.file)
-				const dataUrl = `data:image/${getFileExt(logoItem.file.name).slice(1)};base64,${contentBase64}`
-				updatedShares = updatedShares.map(s => (s.url === url ? { ...s, logo: dataUrl } : s))
-			}
-		}
-	}
-
-	saveToLocalStorage('shares', updatedShares)
-	toast.success('已保存到本地！')
-}
-
-export async function pushShares(params: PushSharesParams): Promise<void> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		await pushSharesOffline(params)
-	} else {
-		await pushSharesOnline(params)
-	}
-}

@@ -1,31 +1,25 @@
-import { AUTH_CONFIG, GITHUB_CONFIG, STORAGE_KEYS } from '@/consts'
+import { createInstallationToken, getInstallationId, signAppJwt } from './github-client'
+import { GITHUB_CONFIG } from '@/consts'
+import { useAuthStore } from '@/hooks/use-auth'
 import { toast } from 'sonner'
+import { decrypt,encrypt } from './aes256-util'
+
+const GITHUB_TOKEN_CACHE_KEY = 'github_token'
+const GITHUB_PEM_CACHE_KEY = 'p_info'
 
 function getTokenFromCache(): string | null {
 	if (typeof sessionStorage === 'undefined') return null
 	try {
-		return sessionStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
+		return sessionStorage.getItem(GITHUB_TOKEN_CACHE_KEY)
 	} catch {
 		return null
 	}
 }
 
-function getTokenExpire(): number | null {
-	if (typeof sessionStorage === 'undefined') return null
-	try {
-		const expireStr = sessionStorage.getItem(STORAGE_KEYS.AUTH_EXPIRE)
-		return expireStr ? parseInt(expireStr, 10) : null
-	} catch {
-		return null
-	}
-}
-
-export function saveTokenToCache(token: string): void {
+function saveTokenToCache(token: string): void {
 	if (typeof sessionStorage === 'undefined') return
 	try {
-		sessionStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token)
-		const expireTime = Date.now() + AUTH_CONFIG.TOKEN_EXPIRE_DAYS * 24 * 60 * 60 * 1000
-		sessionStorage.setItem(STORAGE_KEYS.AUTH_EXPIRE, expireTime.toString())
+		sessionStorage.setItem(GITHUB_TOKEN_CACHE_KEY, token)
 	} catch (error) {
 		console.error('Failed to save token to cache:', error)
 	}
@@ -34,80 +28,105 @@ export function saveTokenToCache(token: string): void {
 function clearTokenCache(): void {
 	if (typeof sessionStorage === 'undefined') return
 	try {
-		sessionStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
-		sessionStorage.removeItem(STORAGE_KEYS.AUTH_EXPIRE)
+		sessionStorage.removeItem(GITHUB_TOKEN_CACHE_KEY)
 	} catch (error) {
 		console.error('Failed to clear token cache:', error)
 	}
 }
 
-function isTokenExpired(): boolean {
-	const expire = getTokenExpire()
-	if (!expire) return true
-	return Date.now() > expire
+export async function getPemFromCache(): Promise<string | null> {
+	if (typeof sessionStorage === 'undefined') return null
+	try {
+		// 解密缓存中的 pem
+		const encryptedPem = sessionStorage.getItem(GITHUB_PEM_CACHE_KEY)
+		if (!encryptedPem) return null
+		return await decrypt(encryptedPem, GITHUB_CONFIG.ENCRYPT_KEY)
+	} catch {
+		return null
+	}
 }
 
-export async function hasAuth(): Promise<boolean> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		return true
+export async function savePemToCache(pem: string): Promise<void> {
+	if (typeof sessionStorage === 'undefined') return
+	try {
+		// 加密 pem 后存储
+		const encryptedPem = await encrypt(pem, GITHUB_CONFIG.ENCRYPT_KEY)
+		sessionStorage.setItem(GITHUB_PEM_CACHE_KEY, encryptedPem)
+	} catch (error) {
+		console.error('Failed to save pem to cache:', error)
 	}
-	
-	const token = getTokenFromCache()
-	if (!token) return false
-	
-	if (isTokenExpired()) {
-		clearTokenCache()
-		return false
-	}
-	
-	return true
 }
 
-export async function getAuthToken(): Promise<string> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		return 'offline_token'
+function clearPemCache(): void {
+	if (typeof sessionStorage === 'undefined') return
+	try {
+		sessionStorage.removeItem(GITHUB_PEM_CACHE_KEY)
+	} catch (error) {
+		console.error('Failed to clear pem cache:', error)
 	}
-	
-	const cachedToken = getTokenFromCache()
-	if (!cachedToken) {
-		throw new Error('请先登录')
-	}
-	
-	if (isTokenExpired()) {
-		clearTokenCache()
-		throw new Error('登录已过期，请重新登录')
-	}
-	
-	if (GITHUB_CONFIG.DEV_MODE) {
-		return 'dev_token'
-	}
-	
-	const githubToken = GITHUB_CONFIG.ACCESS_TOKEN
-	if (!githubToken) {
-		throw new Error('未配置 GitHub Access Token，请在环境变量中设置 GITHUB_ACCESS_TOKEN')
-	}
-	
-	return githubToken
 }
 
 export function clearAllAuthCache(): void {
 	clearTokenCache()
+	clearPemCache()
 }
 
-export function validatePassword(password: string): boolean {
-	const configPassword = AUTH_CONFIG.PASSWORD
-	if (!configPassword) {
-		toast.warning('未设置管理员密码，请在环境变量中配置 NEXT_PUBLIC_AUTH_PASSWORD')
-		return false
+export async function hasAuth(): Promise<boolean> {
+	const cachedToken = getTokenFromCache()
+	const cachedPem = await getPemFromCache()
+
+	// 检查直接密码认证状态
+	const isDirectAuth = useAuthStore.getState().isDirectAuth
+	const isDirectPasswordValid = useAuthStore.getState().isAuth
+
+	return !!cachedToken || !!(await getPemFromCache()) || (isDirectAuth && isDirectPasswordValid)
+}
+
+/**
+ * 统一的认证 Token 获取
+ * 自动处理缓存、签发等逻辑
+ * @returns GitHub Installation Token
+ */
+export async function getAuthToken(): Promise<string> {
+	// 1. 先尝试从缓存获取 token
+	const cachedToken = getTokenFromCache()
+	if (cachedToken) {
+		toast.info('使用缓存的令牌...')
+		return cachedToken
 	}
-	return password === configPassword
-}
 
-export function generateToken(): string {
-	return 'token_' + Date.now() + '_' + Math.random().toString(36).substr(2)
-}
+	// 2. 检查是否使用直接密码认证
+	const isDirectPasswordAuth = useAuthStore.getState().isDirectAuth
+	if (isDirectPasswordAuth) {
+		// 3a. 使用直接密码认证 - 需要私钥
+		const privateKey = useAuthStore.getState().privateKey
+		if (!privateKey) {
+			throw new Error('需要GitHub私钥进行API访问。请在环境变量中设置 GITHUB_PRIVATE_KEY，或使用文件上传方式。')
+		}
+	} else {
+		// 2b. 传统私钥认证
+		const privateKey = useAuthStore.getState().privateKey
+		if (!privateKey) {
+			throw new Error('需要先设置私钥。请使用 useAuth().setPrivateKey()')
+		}
+	}
 
-export function logout(): void {
-	clearTokenCache()
-	toast.info('已退出登录')
+	// 2. 获取私钥（从缓存）
+	const privateKey = useAuthStore.getState().privateKey
+	if (!privateKey) {
+		throw new Error('需要先设置私钥。请使用 useAuth().setPrivateKey()')
+	}
+
+	toast.info('正在签发 JWT...')
+	const jwt = signAppJwt(GITHUB_CONFIG.APP_ID, privateKey)
+
+	toast.info('正在获取安装信息...')
+	const installationId = await getInstallationId(jwt, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO)
+
+	toast.info('正在创建安装令牌...')
+	const token = await createInstallationToken(jwt, installationId)
+
+	saveTokenToCache(token)
+
+	return token
 }

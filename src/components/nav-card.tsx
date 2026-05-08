@@ -28,7 +28,7 @@ const list = [
 	{
 		icon: ScrollOutlineSVG,
 		iconActive: ScrollFilledSVG,
-		label: '日记',
+		label: '近期文章',
 		href: '/blog'
 	},
 	{
@@ -52,8 +52,8 @@ const list = [
 	{
 		icon: WebsiteOutlineSVG,
 		iconActive: WebsiteFilledSVG,
-		label: '优秀博客',
-		href: '/bloggers'
+		label: '技能之树',
+		href: '/skill-tree'
 	}
 ]
 

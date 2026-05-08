@@ -1,8 +1,8 @@
 import useSWR from 'swr'
 import { useAuthStore } from '@/hooks/use-auth'
-import type { BlogIndexItem } from '@/app/blog/types'
+import type { DiaryIndexItem } from '@/app/diary/types'
 
-export type { BlogIndexItem } from '@/app/blog/types'
+export type { DiaryIndexItem }
 
 // 改进 fetcher，抛出状态码以便处理 404
 const fetcher = async (url: string) => {
@@ -16,9 +16,9 @@ const fetcher = async (url: string) => {
 	return Array.isArray(data) ? data : []
 }
 
-export function useBlogIndex() {
+export function useDiaryIndex() {
 	const { isAuth } = useAuthStore()
-	const { data, error, isLoading } = useSWR<BlogIndexItem[]>('/blogs/index.json', fetcher, {
+	const { data, error, isLoading } = useSWR<DiaryIndexItem[]>('/diary/index.json', fetcher, {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: true
 	})
@@ -35,13 +35,13 @@ export function useBlogIndex() {
 	}
 }
 
-export function useLatestBlog() {
-	const { items, loading, error } = useBlogIndex()
+export function useLatestDiary() {
+	const { items, loading, error } = useDiaryIndex()
 
-	const latestBlog = items.length > 0 ? items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] : null
+	const latestDiary = items.length > 0 ? items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] : null
 
 	return {
-		blog: latestBlog,
+		diary: latestDiary,
 		loading,
 		error
 	}

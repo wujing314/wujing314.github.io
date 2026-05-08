@@ -1,14 +1,13 @@
 import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, type TreeItem } from '@/lib/github-client'
 import { getAuthToken } from '@/lib/auth'
 import { GITHUB_CONFIG } from '@/consts'
-import { saveToLocalStorage } from '@/lib/local-storage'
 import { toast } from 'sonner'
 
 export type PushSnippetsParams = {
 	snippets: string[]
 }
 
-async function pushSnippetsOnline(params: PushSnippetsParams): Promise<void> {
+export async function pushSnippets(params: PushSnippetsParams): Promise<void> {
 	const { snippets } = params
 
 	const token = await getAuthToken()
@@ -44,18 +43,4 @@ async function pushSnippetsOnline(params: PushSnippetsParams): Promise<void> {
 	toast.success('发布成功！')
 }
 
-async function pushSnippetsOffline(params: PushSnippetsParams): Promise<void> {
-	const { snippets } = params
 
-	toast.info('正在保存到本地...')
-	saveToLocalStorage('snippets', snippets)
-	toast.success('已保存到本地！')
-}
-
-export async function pushSnippets(params: PushSnippetsParams): Promise<void> {
-	if (GITHUB_CONFIG.OFFLINE_MODE) {
-		await pushSnippetsOffline(params)
-	} else {
-		await pushSnippetsOnline(params)
-	}
-}
