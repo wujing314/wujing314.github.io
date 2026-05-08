@@ -10,6 +10,8 @@ import { LoginModal } from '@/components/login-modal'
 import { pushPictures } from './services/push-pictures'
 import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
+import { loadFromLocalStorage } from '@/lib/local-storage'
+import { GITHUB_CONFIG } from '@/consts'
 import type { ImageItem } from '../projects/components/image-upload-dialog'
 import { useRouter } from 'next/navigation'
 
@@ -21,9 +23,25 @@ export interface Picture {
 	images?: string[]
 }
 
+const PICTURES_KEY = 'pictures_entries'
+
 export default function Page() {
 	const [pictures, setPictures] = useState<Picture[]>(initialList as Picture[])
 	const [originalPictures, setOriginalPictures] = useState<Picture[]>(initialList as Picture[])
+	
+	// 离线模式下从 localStorage 加载数据
+	useEffect(() => {
+		if (GITHUB_CONFIG.OFFLINE_MODE) {
+			const loadData = async () => {
+				const localData = await loadFromLocalStorage<Picture[]>(PICTURES_KEY)
+				if (localData && localData.length > 0) {
+					setPictures(localData)
+					setOriginalPictures(localData)
+				}
+			}
+			loadData()
+		}
+	}, [])
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
 	const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)

@@ -1,11 +1,20 @@
 import { toast } from 'sonner'
 import { getAuthToken } from '@/lib/auth'
+import { saveToLocalStorage, loadFromLocalStorage } from '@/lib/local-storage'
+import { deleteBlogFromLocal } from '@/lib/load-blog'
 import { GITHUB_CONFIG } from '@/consts'
 import { createBlob, createCommit, createTree, getRef, listRepoFilesRecursive, toBase64Utf8, TreeItem, updateRef } from '@/lib/github-client'
 import { removeBlogFromIndex } from '@/lib/blog-index'
 
+const BLOG_INDEX_KEY = 'blog_index'
+
 export async function deleteBlog(slug: string): Promise<void> {
 	if (!slug) throw new Error('需要 slug')
+
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		await deleteBlogOffline(slug)
+		return
+	}
 
 	const token = await getAuthToken()
 
@@ -46,4 +55,18 @@ export async function deleteBlog(slug: string): Promise<void> {
 	await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
 
 	toast.success('删除成功！请等待页面部署后刷新')
+}
+
+// ==================== 离线模式 ====================
+
+async function deleteBlogOffline(slug: string): Promise<void> {
+	toast.info('正在删除本地文章...')
+
+	try {
+		await deleteBlogFromLocal(slug)
+		toast.success('删除成功！（离线模式）')
+	} catch (error) {
+		console.error('Failed to delete blog offline:', error)
+		toast.error('删除失败，请重试')
+	}
 }

@@ -1,6 +1,7 @@
 import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, type TreeItem } from '@/lib/github-client'
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { getAuthToken } from '@/lib/auth'
+import { saveToLocalStorage } from '@/lib/local-storage'
 import { GITHUB_CONFIG } from '@/consts'
 import type { Project } from '../components/project-card'
 import type { ImageItem } from '../components/image-upload-dialog'
@@ -14,6 +15,11 @@ export type PushProjectsParams = {
 
 export async function pushProjects(params: PushProjectsParams): Promise<void> {
 	const { projects, imageItems } = params
+
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		await pushProjectsOffline(params)
+		return
+	}
 
 	const token = await getAuthToken()
 
@@ -77,3 +83,20 @@ export async function pushProjects(params: PushProjectsParams): Promise<void> {
 	toast.success('发布成功！')
 }
 
+// ==================== 离线模式 ====================
+
+const PROJECTS_KEY = 'projects_entries'
+
+async function pushProjectsOffline(params: PushProjectsParams): Promise<void> {
+	const { projects } = params
+
+	toast.info('正在保存到本地...')
+
+	try {
+		await saveToLocalStorage(PROJECTS_KEY, projects)
+		toast.success('保存成功！（离线模式）')
+	} catch (error) {
+		console.error('Failed to save projects offline:', error)
+		toast.error('保存失败，请重试')
+	}
+}

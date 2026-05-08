@@ -2,6 +2,8 @@ import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, 
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { prepareBlogsIndex } from '@/lib/blog-index'
 import { getAuthToken } from '@/lib/auth'
+import { saveToLocalStorage, loadFromLocalStorage } from '@/lib/local-storage'
+import { saveBlogToLocal } from '@/lib/load-blog'
 import { GITHUB_CONFIG } from '@/consts'
 import type { ImageItem } from '../types'
 import { getFileExt } from '@/lib/utils'
@@ -32,6 +34,11 @@ export async function pushBlog(params: PushBlogParams): Promise<void> {
 
 	if (mode === 'edit' && originalSlug && originalSlug !== form.slug) {
 		throw new Error('编辑模式下不支持修改 slug，请保持原 slug 不变')
+	}
+
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		await pushBlogOffline(params)
+		return
 	}
 
 	// 获取认证 token（自动从全局认证状态获取）
@@ -176,4 +183,61 @@ export async function pushBlog(params: PushBlogParams): Promise<void> {
 	await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
 
 	toast.success('发布成功！')
+}
+
+// ==================== 离线模式 ====================
+
+const BLOG_INDEX_KEY = 'blog_index'
+
+async function pushBlogOffline(params: PushBlogParams): Promise<void> {
+	const { form, cover, images, mode = 'create', originalSlug } = params
+
+	toast.info('正在保存到本地...')
+
+	try {
+		// 获取现有的博客索引
+		const existingIndex = await loadFromLocalStorage<any[]>(BLOG_INDEX_KEY) || []
+		
+		// 创建或更新索引项
+		const newIndexItem = {
+			slug: form.slug,
+			title: form.title,
+			tags: form.tags,
+			date: form.date || formatDateTimeLocal(),
+			summary: form.summary,
+			cover: cover?.type === 'url' ? cover.url : cover?.previewUrl,
+			hidden: form.hidden || false,
+			category: form.category
+		}
+		
+		if (mode === 'edit' && originalSlug) {
+			// 找到并更新现有索引
+			const index = existingIndex.findIndex(item => item.slug === originalSlug)
+			if (index !== -1) {
+				existingIndex[index] = newIndexItem
+			}
+		} else {
+			// 添加新索引
+			existingIndex.push(newIndexItem)
+		}
+
+		await saveToLocalStorage(BLOG_INDEX_KEY, existingIndex)
+		
+		// 保存博客内容（markdown 和 config）
+		const blogConfig = {
+			title: form.title,
+			tags: form.tags,
+			date: form.date || formatDateTimeLocal(),
+			summary: form.summary,
+			cover: cover?.type === 'url' ? cover.url : cover?.previewUrl,
+			hidden: form.hidden || false,
+			category: form.category
+		}
+		await saveBlogToLocal(form.slug, { config: blogConfig, markdown: form.md })
+		
+		toast.success('保存成功！（离线模式）')
+	} catch (error) {
+		console.error('Failed to save blog offline:', error)
+		toast.error('保存失败，请重试')
+	}
 }

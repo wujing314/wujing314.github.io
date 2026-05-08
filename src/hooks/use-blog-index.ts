@@ -1,5 +1,8 @@
 import useSWR from 'swr'
+import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/hooks/use-auth'
+import { loadFromLocalStorage } from '@/lib/local-storage'
+import { GITHUB_CONFIG } from '@/consts'
 import type { BlogIndexItem } from '@/app/blog/types'
 
 export type { BlogIndexItem } from '@/app/blog/types'
@@ -16,21 +19,42 @@ const fetcher = async (url: string) => {
 	return Array.isArray(data) ? data : []
 }
 
+const BLOG_INDEX_KEY = 'blog_index'
+
 export function useBlogIndex() {
 	const { isAuth } = useAuthStore()
-	const { data, error, isLoading } = useSWR<BlogIndexItem[]>('/blogs/index.json', fetcher, {
-		revalidateOnFocus: false,
-		revalidateOnReconnect: true
-	})
+	const [localItems, setLocalItems] = useState<BlogIndexItem[] | null>(null)
 
-	let result = data || []
+	// 离线模式下从 localStorage 读取数据
+	useEffect(() => {
+		if (GITHUB_CONFIG.OFFLINE_MODE) {
+			const loadData = async () => {
+				const data = await loadFromLocalStorage<BlogIndexItem[]>(BLOG_INDEX_KEY)
+				setLocalItems(data || [])
+			}
+			loadData()
+		}
+	}, [])
+
+	const { data, error, isLoading } = useSWR<BlogIndexItem[]>(
+		GITHUB_CONFIG.OFFLINE_MODE ? null : '/blogs/index.json',
+		fetcher,
+		{
+			revalidateOnFocus: false,
+			revalidateOnReconnect: true
+		}
+	)
+
+	// 离线模式使用本地数据，否则使用服务器数据
+	let result = GITHUB_CONFIG.OFFLINE_MODE ? (localItems || []) : (data || [])
+	
 	if (!isAuth) {
 		result = result.filter(item => !item.hidden)
 	}
 
 	return {
 		items: result,
-		loading: isLoading,
+		loading: GITHUB_CONFIG.OFFLINE_MODE ? false : isLoading,
 		error
 	}
 }

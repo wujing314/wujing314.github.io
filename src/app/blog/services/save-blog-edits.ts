@@ -1,12 +1,18 @@
 import { toast } from 'sonner'
 import { GITHUB_CONFIG } from '@/consts'
 import { getAuthToken } from '@/lib/auth'
+import { saveToLocalStorage } from '@/lib/local-storage'
 import { createBlob, createCommit, createTree, getRef, listRepoFilesRecursive, toBase64Utf8, type TreeItem, updateRef } from '@/lib/github-client'
 import type { BlogIndexItem } from '@/lib/blog-index'
 
 export async function saveBlogEdits(originalItems: BlogIndexItem[], nextItems: BlogIndexItem[], categories: string[]): Promise<void> {
 	const removedSlugs = originalItems.filter(item => !nextItems.some(next => next.slug === item.slug)).map(item => item.slug)
 	const uniqueRemoved = Array.from(new Set(removedSlugs.filter(Boolean)))
+
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		await saveBlogEditsOffline(nextItems, categories)
+		return
+	}
 
 	const token = await getAuthToken()
 
@@ -72,3 +78,23 @@ export async function saveBlogEdits(originalItems: BlogIndexItem[], nextItems: B
 	toast.success('保存成功！请等待页面部署后刷新')
 }
 
+// ==================== 离线模式 ====================
+
+const BLOG_INDEX_KEY = 'blog_index'
+const BLOG_CATEGORIES_KEY = 'blog_categories'
+
+async function saveBlogEditsOffline(items: BlogIndexItem[], categories: string[]): Promise<void> {
+	toast.info('正在保存到本地...')
+
+	try {
+		const sortedItems = [...items].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+		const uniqueCategories = Array.from(new Set(categories.map(c => c.trim()).filter(Boolean)))
+		
+		await saveToLocalStorage(BLOG_INDEX_KEY, sortedItems)
+		await saveToLocalStorage(BLOG_CATEGORIES_KEY, { categories: uniqueCategories })
+		toast.success('保存成功！（离线模式）')
+	} catch (error) {
+		console.error('Failed to save blog edits offline:', error)
+		toast.error('保存失败，请重试')
+	}
+}

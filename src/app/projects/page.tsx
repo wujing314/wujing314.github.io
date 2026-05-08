@@ -9,12 +9,30 @@ import { LoginModal } from '@/components/login-modal'
 import { pushProjects } from './services/push-projects'
 import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
+import { loadFromLocalStorage } from '@/lib/local-storage'
+import { GITHUB_CONFIG } from '@/consts'
 import initialList from './list.json'
 import type { ImageItem } from './components/image-upload-dialog'
+
+const PROJECTS_KEY = 'projects_entries'
 
 export default function Page() {
 	const [projects, setProjects] = useState<Project[]>(initialList as Project[])
 	const [originalProjects, setOriginalProjects] = useState<Project[]>(initialList as Project[])
+	
+	// 离线模式下从 localStorage 加载数据
+	useEffect(() => {
+		if (GITHUB_CONFIG.OFFLINE_MODE) {
+			const loadData = async () => {
+				const localData = await loadFromLocalStorage<Project[]>(PROJECTS_KEY)
+				if (localData && localData.length > 0) {
+					setProjects(localData)
+					setOriginalProjects(localData)
+				}
+			}
+			loadData()
+		}
+	}, [])
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
 	const [editingProject, setEditingProject] = useState<Project | null>(null)

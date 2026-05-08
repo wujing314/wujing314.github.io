@@ -8,15 +8,38 @@ import { DialogModal } from '@/components/dialog-modal'
 import { LoginModal } from '@/components/login-modal'
 import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
+import { loadFromLocalStorage } from '@/lib/local-storage'
+import { GITHUB_CONFIG } from '@/consts'
 import initialList from './list.json'
 import { pushSnippets } from './services/push-snippets'
+
+const SNIPPETS_KEY = 'snippets_entries'
 
 const getRandomSnippet = (list: string[]) => (list.length === 0 ? '' : list[Math.floor(Math.random() * list.length)])
 
 export default function Page() {
 	const [snippets, setSnippets] = useState<string[]>(initialList as string[])
 	const [originalSnippets, setOriginalSnippets] = useState<string[]>(initialList as string[])
-	const [currentSnippet, setCurrentSnippet] = useState<string>(getRandomSnippet(initialList as string[]))
+	
+	// 离线模式下从 localStorage 加载数据
+	useEffect(() => {
+		if (GITHUB_CONFIG.OFFLINE_MODE) {
+			const loadData = async () => {
+				const localData = await loadFromLocalStorage<string[]>(SNIPPETS_KEY)
+				if (localData && localData.length > 0) {
+					setSnippets(localData)
+					setOriginalSnippets(localData)
+				}
+			}
+			loadData()
+		}
+	}, [])
+	const [currentSnippet, setCurrentSnippet] = useState<string>('')
+	
+	// 更新当前显示的句子
+	useEffect(() => {
+		setCurrentSnippet(getRandomSnippet(snippets))
+	}, [snippets])
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
 	const [isManageOpen, setIsManageOpen] = useState(false)

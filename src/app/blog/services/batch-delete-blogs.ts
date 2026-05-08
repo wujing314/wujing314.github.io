@@ -1,13 +1,21 @@
 import { toast } from 'sonner'
 import { getAuthToken } from '@/lib/auth'
+import { saveToLocalStorage, loadFromLocalStorage } from '@/lib/local-storage'
 import { GITHUB_CONFIG } from '@/consts'
 import { createBlob, createCommit, createTree, getRef, listRepoFilesRecursive, toBase64Utf8, type TreeItem, updateRef } from '@/lib/github-client'
 import { removeBlogsFromIndex } from '@/lib/blog-index'
+
+const BLOG_INDEX_KEY = 'blog_index'
 
 export async function batchDeleteBlogs(slugs: string[]): Promise<void> {
 	const uniqueSlugs = Array.from(new Set(slugs.filter(Boolean)))
 	if (uniqueSlugs.length === 0) {
 		throw new Error('需要至少选择一篇文章')
+	}
+
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		await batchDeleteBlogsOffline(uniqueSlugs)
+		return
 	}
 
 	const token = await getAuthToken()
@@ -54,3 +62,18 @@ export async function batchDeleteBlogs(slugs: string[]): Promise<void> {
 	toast.success('删除成功！请等待页面部署后刷新')
 }
 
+// ==================== 离线模式 ====================
+
+async function batchDeleteBlogsOffline(slugs: string[]): Promise<void> {
+	toast.info('正在批量删除本地文章...')
+
+	try {
+		const blogs = await loadFromLocalStorage<any[]>(BLOG_INDEX_KEY) || []
+		const filteredBlogs = blogs.filter(b => !slugs.includes(b.slug))
+		await saveToLocalStorage(BLOG_INDEX_KEY, filteredBlogs)
+		toast.success('删除成功！（离线模式）')
+	} catch (error) {
+		console.error('Failed to batch delete blogs offline:', error)
+		toast.error('删除失败，请重试')
+	}
+}

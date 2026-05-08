@@ -1,6 +1,7 @@
 import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, readTextFileFromRepo, type TreeItem } from '@/lib/github-client'
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { getAuthToken } from '@/lib/auth'
+import { saveToLocalStorage } from '@/lib/local-storage'
 import { GITHUB_CONFIG } from '@/consts'
 import type { ImageItem } from '../../projects/components/image-upload-dialog'
 import { getFileExt } from '@/lib/utils'
@@ -14,6 +15,11 @@ export type PushPicturesParams = {
 
 export async function pushPictures(params: PushPicturesParams): Promise<void> {
 	const { pictures, imageItems } = params
+
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		await pushPicturesOffline(params)
+		return
+	}
 
 	const token = await getAuthToken()
 
@@ -144,4 +150,22 @@ export async function pushPictures(params: PushPicturesParams): Promise<void> {
 	await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
 
 	toast.success('发布成功！')
+}
+
+// ==================== 离线模式 ====================
+
+const PICTURES_KEY = 'pictures_entries'
+
+async function pushPicturesOffline(params: PushPicturesParams): Promise<void> {
+	const { pictures } = params
+
+	toast.info('正在保存到本地...')
+
+	try {
+		await saveToLocalStorage(PICTURES_KEY, pictures)
+		toast.success('保存成功！（离线模式）')
+	} catch (error) {
+		console.error('Failed to save pictures offline:', error)
+		toast.error('保存失败，请重试')
+	}
 }

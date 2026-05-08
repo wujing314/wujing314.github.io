@@ -7,9 +7,13 @@ import { useMarkdownRender } from '@/hooks/use-markdown-render'
 import { pushAbout, type AboutData } from './services/push-about'
 import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
+import { loadFromLocalStorage } from '@/lib/local-storage'
+import { GITHUB_CONFIG } from '@/consts'
 import LikeButton from '@/components/like-button'
 import GithubSVG from '@/svgs/github.svg'
 import { LoginModal } from '@/components/login-modal'
+
+const ABOUT_KEY = 'about_data'
 
 export default function Page() {
 	const [data, setData] = useState<AboutData>({} as AboutData)
@@ -26,7 +30,7 @@ export default function Page() {
 	// Initialize data if not loaded
 	useEffect(() => {
 		const initialData = {
-			title: '吴晶 - 个人简历',
+			title: '个人简历',
 			description: '电气工程及其自动化专业 | 专注单片机与物联网技术',
 			content: `# 👋 你好，我是吴晶
 
@@ -109,10 +113,23 @@ export default function Page() {
 
 *很高兴认识你！希望有机会一起交流学习。*`
 		}
-		if (!data.title) {
-			setData(initialData)
-			setOriginalData(initialData)
+		
+		const loadData = async () => {
+			if (GITHUB_CONFIG.OFFLINE_MODE) {
+				const localData = await loadFromLocalStorage<AboutData>(ABOUT_KEY)
+				if (localData && localData.title) {
+					setData(localData)
+					setOriginalData(localData)
+					return
+				}
+			}
+			if (!data.title) {
+				setData(initialData)
+				setOriginalData(initialData)
+			}
 		}
+		
+		loadData()
 	}, [])
 
 	const handleSaveClick = () => {
@@ -178,13 +195,13 @@ export default function Page() {
 				onSuccess={() => setIsEditMode(true)}
 			/>
 
-			<div className='flex flex-col lg:flex-row gap-8 px-6 pt-24 pb-12 max-sm:px-0'>
+			<div className='flex flex-col lg:flex-row items-start justify-center gap-8 px-6 pt-24 pb-12 max-sm:px-4 max-w-6xl mx-auto'>
 				{/* Left Sidebar - Resume Style */}
 				<motion.div
 					initial={{ opacity: 0, x: -20 }}
 					animate={{ opacity: 1, x: 0 }}
 					transition={{ delay: 0.1 }}
-					className='lg:w-1/3 space-y-6'
+					className='lg:w-80 space-y-6 flex-shrink-0'
 				>
 					{/* Avatar */}
 					<div className='card relative p-6 backdrop-blur-md bg-white/70 rounded-2xl shadow-lg border border-white/50'>
@@ -321,21 +338,21 @@ export default function Page() {
 					initial={{ opacity: 0, x: 20 }}
 					animate={{ opacity: 1, x: 0 }}
 					transition={{ delay: 0.2 }}
-					className='lg:w-2/3'
+					className='flex-1 min-w-0'
 				>
-					<div className='w-full max-w-none'>
+					<div className='w-full'>
 						{isEditMode ? (
 							isPreviewMode ? (
 								<div className='space-y-6'>
 									<div className='text-center'>
-										<h1 className='mb-4 text-4xl font-bold'>{data.title || '标题预览'}</h1>
+										<h1 className='mb-4 text-3xl font-bold'>{data.title || '标题预览'}</h1>
 										<p className='text-secondary text-lg'>{data.description || '描述预览'}</p>
 									</div>
 
 									{loading ? (
 										<div className='text-secondary text-center'>预览渲染中...</div>
 									) : (
-										<div className='card relative p-6'>
+										<div className='card relative p-8 backdrop-blur-md bg-white/70 rounded-2xl shadow-lg border border-white/50'>
 											<div className='prose prose-sm max-w-none'>{content}</div>
 										</div>
 									)}
@@ -359,10 +376,10 @@ export default function Page() {
 										/>
 									</div>
 
-									<div className='card relative'>
+									<div className='card relative backdrop-blur-md bg-white/70 rounded-2xl shadow-lg border border-white/50'>
 										<textarea
 											placeholder='Markdown 内容'
-											className='min-h-[500px] w-full resize-none text-sm'
+											className='min-h-[500px] w-full resize-none text-sm p-6'
 											value={data.content}
 											onChange={e => setData({ ...data, content: e.target.value })}
 										/>
@@ -371,22 +388,13 @@ export default function Page() {
 							)
 						) : (
 							<>
-								<motion.div
-									initial={{ opacity: 0, y: 20 }}
-									animate={{ opacity: 1, y: 0 }}
-									className='mb-8 text-center'
-								>
-									<h1 className='mb-4 text-4xl font-bold'>{data.title}</h1>
-									<p className='text-secondary text-lg'>{data.description}</p>
-								</motion.div>
-
 								{loading ? (
 									<div className='text-secondary text-center'>加载中...</div>
 								) : (
 									<motion.div
-										initial={{ opacity: 0, scale: 0.8 }}
+										initial={{ opacity: 0, scale: 0.95 }}
 										animate={{ opacity: 1, scale: 1 }}
-										className='card relative p-6'
+										className='card relative p-8 backdrop-blur-md bg-white/70 rounded-2xl shadow-lg border border-white/50'
 									>
 										<div className='prose prose-sm max-w-none'>{content}</div>
 									</motion.div>

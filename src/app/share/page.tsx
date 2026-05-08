@@ -9,13 +9,31 @@ import { LoginModal } from '@/components/login-modal'
 import { pushShares } from './services/push-shares'
 import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
+import { loadFromLocalStorage } from '@/lib/local-storage'
+import { GITHUB_CONFIG } from '@/consts'
 import initialList from './list.json'
 import type { Share } from './components/share-card'
 import type { LogoItem } from './components/logo-upload-dialog'
 
+const SHARES_KEY = 'shares_entries'
+
 export default function Page() {
 	const [shares, setShares] = useState<Share[]>(initialList as Share[])
 	const [originalShares, setOriginalShares] = useState<Share[]>(initialList as Share[])
+	
+	// 离线模式下从 localStorage 加载数据
+	useEffect(() => {
+		if (GITHUB_CONFIG.OFFLINE_MODE) {
+			const loadData = async () => {
+				const localData = await loadFromLocalStorage<Share[]>(SHARES_KEY)
+				if (localData && localData.length > 0) {
+					setShares(localData)
+					setOriginalShares(localData)
+				}
+			}
+			loadData()
+		}
+	}, [])
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
 	const [editingShare, setEditingShare] = useState<Share | null>(null)

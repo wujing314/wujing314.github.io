@@ -1,6 +1,7 @@
 import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, type TreeItem } from '@/lib/github-client'
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { getAuthToken } from '@/lib/auth'
+import { saveToLocalStorage } from '@/lib/local-storage'
 import { GITHUB_CONFIG } from '@/consts'
 import type { Blogger } from '../grid-view'
 import type { AvatarItem } from '../components/avatar-upload-dialog'
@@ -14,6 +15,11 @@ export type PushBloggersParams = {
 
 export async function pushBloggers(params: PushBloggersParams): Promise<void> {
 	const { bloggers, avatarItems } = params
+
+	if (GITHUB_CONFIG.OFFLINE_MODE) {
+		await pushBloggersOffline(params)
+		return
+	}
 
 	// 获取认证 token（自动从全局认证状态获取）
 	const token = await getAuthToken()
@@ -82,4 +88,22 @@ export async function pushBloggers(params: PushBloggersParams): Promise<void> {
 	await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
 
 	toast.success('发布成功！')
+}
+
+// ==================== 离线模式 ====================
+
+const BLOGGERS_KEY = 'bloggers_entries'
+
+async function pushBloggersOffline(params: PushBloggersParams): Promise<void> {
+	const { bloggers } = params
+
+	toast.info('正在保存到本地...')
+
+	try {
+		await saveToLocalStorage(BLOGGERS_KEY, bloggers)
+		toast.success('保存成功！（离线模式）')
+	} catch (error) {
+		console.error('Failed to save bloggers offline:', error)
+		toast.error('保存失败，请重试')
+	}
 }
