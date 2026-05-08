@@ -74,12 +74,9 @@ export function clearAllAuthCache(): void {
 export async function hasAuth(): Promise<boolean> {
 	const cachedToken = getTokenFromCache()
 	const cachedPem = await getPemFromCache()
+	const isAuth = useAuthStore.getState().isAuth
 
-	// 检查直接密码认证状态
-	const isDirectAuth = useAuthStore.getState().isDirectAuth
-	const isDirectPasswordValid = useAuthStore.getState().isAuth
-
-	return !!cachedToken || !!(await getPemFromCache()) || (isDirectAuth && isDirectPasswordValid)
+	return !!cachedToken || !!cachedPem || isAuth
 }
 
 /**
@@ -95,26 +92,10 @@ export async function getAuthToken(): Promise<string> {
 		return cachedToken
 	}
 
-	// 2. 检查是否使用直接密码认证
-	const isDirectPasswordAuth = useAuthStore.getState().isDirectAuth
-	if (isDirectPasswordAuth) {
-		// 3a. 使用直接密码认证 - 需要私钥
-		const privateKey = useAuthStore.getState().privateKey
-		if (!privateKey) {
-			throw new Error('需要GitHub私钥进行API访问。请在环境变量中设置 GITHUB_PRIVATE_KEY，或使用文件上传方式。')
-		}
-	} else {
-		// 2b. 传统私钥认证
-		const privateKey = useAuthStore.getState().privateKey
-		if (!privateKey) {
-			throw new Error('需要先设置私钥。请使用 useAuth().setPrivateKey()')
-		}
-	}
-
-	// 2. 获取私钥（从缓存）
+	// 2. 获取私钥
 	const privateKey = useAuthStore.getState().privateKey
 	if (!privateKey) {
-		throw new Error('需要先设置私钥。请使用 useAuth().setPrivateKey()')
+		throw new Error('需要先设置私钥。请使用登录功能上传 GitHub App 私钥文件。')
 	}
 
 	toast.info('正在签发 JWT...')
