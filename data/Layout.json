@@ -3,10 +3,10 @@
         "name": "吴晶",
         "title": "WJ",
         "image": "images/head.jpg",
-        "home": "Home.html"
+        "home": "index.html"
     },
     "navigation": [
-        { "label": "Home", "path": "Home.html" },
+        { "label": "Home", "path": "index.html" },
         { "label": "Resume", "path": "pages/Resume.html" },
         { "label": "Project", "path": "pages/Project.html" },
         { "label": "About", "path": "pages/About.html" }
