@@ -63,8 +63,8 @@ function isCurrentPath(path) {
 
 function renderActionButtons(actions, includeMenu) {
     const buttons = (actions || []).map(action => `
-        <button class="hover:text-black dark:hover:text-white" title="${action.label}" aria-label="${action.label}" onclick="${action.onclick}">
-            <i class="${action.icon}" ${action.icon === 'ri-contrast-2-line' ? 'id="darkModelIcon"' : ''}></i>
+        <button class="hover:text-black dark:hover:text-white" title="${action.label}" aria-label="${action.label}" onclick="${action.onclick}" ${action.type === 'theme' ? 'data-theme-toggle' : ''}>
+            <i class="${action.icon}"></i>
         </button>
     `).join('');
 
@@ -180,5 +180,7 @@ function renderSiteChrome(layout) {
             </div>
         `;
     }
+
+    if (window.syncThemeControls) window.syncThemeControls();
 }
 

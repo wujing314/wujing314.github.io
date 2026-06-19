@@ -12,7 +12,7 @@
         { "label": "About", "path": "pages/About.html" }
     ],
     "actions": [
-        { "type": "button", "label": "Dark mode", "icon": "ri-contrast-2-line", "onclick": "toggleDarkMode()" },
+        { "type": "theme", "label": "切换为黑色主题", "icon": "ri-moon-line", "onclick": "toggleDarkMode()" },
         { "type": "button", "label": "Search", "icon": "ri-search-2-line", "onclick": "toggleSearch()" }
     ],
     "copyright": {

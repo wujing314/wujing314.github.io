@@ -12,9 +12,11 @@
     <meta name="author" content="吴晶"/>
     <meta name="keywords" content="blog,links,contact"/>
     <meta name="description" content="About and contact information"/>
+    <script src="../source/js/theme.js"></script>
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"></noscript>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' };</script>
     <style>
         @tailwind base;
         @tailwind components;
@@ -50,7 +52,7 @@
             </ul>
         </div>
         <div class="flex justify-start text-767676 dark:text-[#999] text-lg space-x-3">
-            <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+            <button class="hover:text-black dark:hover:text-white" data-theme-toggle title="切换为黑色主题" aria-label="切换为黑色主题" onclick="toggleDarkMode()"><i class="ri-moon-line"></i></button>
             <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
         </div>
         <div class="copyright text-767676 dark-text-[#999]">
@@ -62,7 +64,7 @@
         <div class="flex justify-between p-4">
             <div class="logo"><a href="../Home.html" title="wj"><img class="w-9 h-9 rounded-full object-cover p-0.5 bg-white shadow dark:bg-neutral-800" src="../images/head.jpg" alt="wj"></a></div>
             <div class="menu dark:text-[#999] space-x-3">
-                <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+                <button class="hover:text-black dark:hover:text-white" data-theme-toggle title="切换为黑色主题" aria-label="切换为黑色主题" onclick="toggleDarkMode()"><i class="ri-moon-line"></i></button>
                 <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
                 <button onclick="toggleNav()"><i class="ri-menu-3-line"></i></button>
             </div>
@@ -250,19 +252,6 @@
 
     function toggleNav() { $('#mobileNav').slideToggle(500); }
     function toggleSearch() { $('#search').toggle('.2'); }
-    function toggleDarkMode() {
-        var dark = window.localStorage.getItem('dark');
-        dark = !dark || dark == 0 ? 1 : 0;
-        window.localStorage.setItem('dark', dark);
-        darkMode();
-    }
-    function darkMode() {
-        var dark = window.localStorage.getItem('dark');
-        if (!dark) return;
-        if (dark == 1) $('html').addClass('dark');
-        else $('html').removeClass('dark');
-    }
-    darkMode();
     $(function() {
         var url = location.href;
         $(".nav li a").each(function() {
