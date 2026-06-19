@@ -50,7 +50,7 @@ function withBasePath(path) {
     if (!path) return '#';
     if (/^(https?:|mailto:|tel:|#)/i.test(path)) return path;
     if (!isPageInSubDirectory()) return path;
-    if (path === 'index.html') return '../index.html';
+    if (path === 'Home.html') return '../Home.html';
     if (path.indexOf('pages/') === 0) return path.replace('pages/', '');
     return '../' + path;
 }
@@ -58,7 +58,7 @@ function withBasePath(path) {
 function isCurrentPath(path) {
     const current = location.pathname.replace(/\\/g, '/').split('/').pop();
     const target = path.replace(/\\/g, '/').split('/').pop();
-    return current === target || (current === '' && target === 'index.html');
+    return current === target || (current === '' && target === 'Home.html');
 }
 
 function renderActionButtons(actions, includeMenu) {
@@ -85,7 +85,7 @@ function renderSiteChrome(layout) {
     const brand = layout.brand || {};
     const copyright = layout.copyright || {};
     const search = layout.search || {};
-        const brandHome = withBasePath(brand.home || 'index.html');
+    const brandHome = withBasePath(brand.home || 'Home.html');
     const brandImage = withBasePath(brand.image || 'images/head.jpg');
     const searchAction = withBasePath(search.action || 'search.html');
     const desktopHeader = document.querySelector('header.hidden.fixed');
