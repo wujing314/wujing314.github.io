@@ -13,6 +13,7 @@
     <meta name="keywords" content="about,profile,developer"/>
     <meta name="description" content="吴晶的个人简历 - 控制工程、嵌入式系统与物联网方向"/>
     <script src="../source/js/theme.js"></script>
+    <script src="../source/js/mobile-nav.js"></script>
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"></noscript>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -332,8 +333,6 @@
             });
     }
 
-    function toggleNav() { $('#mobileNav').slideToggle(500); }
-    function toggleSearch() { $('#search').toggle('.2'); }
     $(function() {
         var url = location.href;
         $(".nav li a").each(function() {

@@ -68,7 +68,7 @@ function renderActionButtons(actions, includeMenu) {
         </button>
     `).join('');
 
-    return includeMenu ? buttons + '<button title="Menu" aria-label="Menu" onclick="toggleNav()"><i class="ri-menu-3-line"></i></button>' : buttons;
+    return includeMenu ? buttons + '<button class="mobile-menu-button" data-mobile-menu title="打开导航菜单" aria-label="打开导航菜单" aria-expanded="false" onclick="toggleNav()"><i class="ri-menu-3-line" aria-hidden="true"></i><span>菜单</span></button>' : buttons;
 }
 
 function renderNavItems(navigation, centered) {
@@ -182,5 +182,6 @@ function renderSiteChrome(layout) {
     }
 
     if (window.syncThemeControls) window.syncThemeControls();
+    if (window.enhanceMobileControls) window.enhanceMobileControls();
 }
 

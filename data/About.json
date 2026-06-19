@@ -2,7 +2,7 @@
     "title": "About",
     "intro": "联系我",
     "external_links": [
-        { "name": "GitHub", "url": "https://github.com/wujing314", "description": "代码托管与开源项目" },
+        { "name": "GitHub", "url": "https://github.com/wj314", "description": "代码托管与开源项目" },
         { "name": "CSDN", "url": "https://blog.csdn.net/weixin_69782922?type=blog", "description": "技术文章与学习笔记" },
         { "name": "Bilibili", "url": "https://space.bilibili.com/1665281675", "description": "视频学习与创作平台" },
         { "name": "blog", "url": "https://www.wujing.lol", "description": "个人博客" }

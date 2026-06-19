@@ -8,6 +8,7 @@
     <meta name="keywords" content="project,robotics,embedded"/>
     <meta name="description" content="项目详细记录"/>
     <script src="../source/js/theme.js"></script>
+    <script src="../source/js/mobile-nav.js"></script>
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"></noscript>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -115,8 +116,6 @@
 <script src="../source/js/ion-background.js"></script>
 <script src="../data/loader.js"></script>
 <script>
-    function toggleNav() { $('#mobileNav').slideToggle(500); }
-    function toggleSearch() { $('#search').toggle('.2'); }
     function esc(value) {
         return String(value || '').replace(/[&<>"']/g, char => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[char]));
     }

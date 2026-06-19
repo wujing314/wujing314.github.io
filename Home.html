@@ -13,6 +13,7 @@
     <meta name="keywords" content="blog,technology,sharing"/>
     <meta name="description" content="吴晶的个人博客 - DIY爱好"/>
     <script src="source/js/theme.js"></script>
+    <script src="source/js/mobile-nav.js"></script>
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"></noscript>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -147,7 +148,7 @@
                     </div>
                     <div class="social hidden lg:block dark:text-767676">
                         <ul class="flex space-x-4">
-                            <li><a href="https://github.com/wujing314" title="GitHub" target="_blank"><i class="ri-github-line text-2xl"></i></a></li>
+                            <li><a href="https://github.com/wj314" title="GitHub" target="_blank"><i class="ri-github-line text-2xl"></i></a></li>
                             <li><a href="https://blog.csdn.net/weixin_69782922?type=blog" title="CSDN" target="_blank"><i class="ri-code-s-slash-line text-2xl"></i></a></li>
                             <li><a href="mailto:2099915224@qq.com" title="Email" target="_blank"><i class="ri-mail-line text-2xl"></i></a></li>
                             <li><a href="https://space.bilibili.com/1665281675" title="Bilibili" target="_blank"><i class="ri-bilibili-line text-2xl"></i></a></li>
@@ -167,8 +168,6 @@
 <script src="data/loader.js"></script>
 <script>
     site_cursor();
-
-    function toggleNav() { $('#mobileNav').slideToggle(500); }
 
     loadAllData()
         .then(data => {
@@ -204,8 +203,6 @@
             $(this).is("a") && $(this).closest(".cursor-pointer").length || (e.classList.remove("cursor-hover"), t.classList.remove("cursor-hover"));
         });
     }
-
-    function toggleSearch() { $('#search').toggle('.2'); }
 
     $(function() {
         var url = location.href;
