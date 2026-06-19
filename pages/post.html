@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Detail - 吴晶</title>
+    <meta name="author" content="吴晶"/>
+    <meta name="keywords" content="project,robotics,embedded"/>
+    <meta name="description" content="项目详细记录"/>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"></noscript>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        .page-mqx-width { max-width: 1300px; }
+        .text-767676 { color: #767676; }
+        .markdown-body h1 { font-size: 1.75rem; font-weight: 800; margin: 1.5rem 0 .75rem; color: #111827; }
+        .markdown-body h2 { font-size: 1.25rem; font-weight: 800; margin: 1.25rem 0 .5rem; color: #111827; }
+        .markdown-body ul, .markdown-body ol { padding-left: 1.25rem; margin: .5rem 0; }
+        .markdown-body ul { list-style: disc; }
+        .markdown-body ol { list-style: decimal; }
+        .markdown-body p, .markdown-body li { line-height: 1.8; color: #767676; }
+        .markdown-body img { max-width: 100%; border-radius: .5rem; margin: .75rem 0; }
+        .dark .markdown-body h1, .dark .markdown-body h2 { color: white; }
+        .dark .markdown-body p, .dark .markdown-body li { color: #a3a3a3; }
+    </style>
+</head>
+
+<body class="bg-[#f9f9f9] dark:bg-neutral-800">
+<div class="flex flex-col lg:flex-row">
+    <header class="hidden fixed w-[330px] px-16 h-screen space-y-16 lg:flex flex-col justify-center content-start bg-white dark:bg-neutral-900">
+        <div class="logo"><a href="../Home.html" title="wj"><img src="../images/head.jpg" alt="wj" class="w-20 h-20 rounded-full object-cover p-1 bg-white shadow-lg dark:bg-neutral-800"></a></div>
+        <div class="nav">
+            <ul class="text-767676 dark:text-[#999] space-y-2">
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="../Home.html">Home</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="Resume.html">Resume</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300 text-black dark:text-white font-semibold tracking-wide" href="Project.html">Project</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="About.html">About</a></li>
+            </ul>
+        </div>
+        <div class="flex justify-start text-767676 dark:text-[#999] text-lg space-x-3">
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
+        </div>
+        <div class="copyright text-767676 dark:text-[#999]">
+            <p>&copy; 2026 <a class="text-black dark:text-white" href="../Home.html">吴晶</a></p>
+        </div>
+    </header>
+
+    <header class="lg:hidden bg-white sticky top-0 z-50 dark:bg-neutral-900">
+        <div class="flex justify-between p-4">
+            <div class="logo"><a href="../Home.html" title="wj"><img class="w-9 h-9 rounded-full object-cover p-0.5 bg-white shadow dark:bg-neutral-800" src="../images/head.jpg" alt="wj"></a></div>
+            <div class="menu dark:text-[#999] space-x-3">
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
+                <button onclick="toggleNav()"><i class="ri-menu-3-line"></i></button>
+            </div>
+        </div>
+        <div class="mobile-nav right-0 bg-white h-full w-full dark:bg-neutral-900" id="mobileNav" style="display: none">
+            <ul class="text-767676 space-y-6 py-6">
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="../Home.html">Home</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="Resume.html">Resume</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="Project.html">Project</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="About.html">About</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div id="search" style="display: none" class="fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto bg-white dark:bg-neutral-900 z-50 flex justify-center content-center items-center">
+        <div class="absolute right-2 top-2">
+            <button class="text-3xl text-767676 cursor-pointer hover:text-black dark:text-[#999] dark:hover:text-white" onclick="toggleSearch()"><i class="ri-close-circle-line"></i></button>
+        </div>
+        <div class="search-wrap">
+            <form method="get" action="search.html" role="search" class="flex justify-start content-center">
+                <input autocomplete="off" class="border-b border-stone-300 dark:border-[#999] focus:outline-none focus:border-b w-full bg-transparent" type="search" name="keyword" placeholder="Search" required>
+                <button type="submit" class="dark:text-[#999] dark:hover:text-white"><i class="ri-search-2-line"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <main class="flex flex-col lg:pl-[330px] w-full">
+        <div class="page-title my-20 mx-auto page-mqx-width w-full lg:px-[40px]">
+            <h1 class="text-4xl font-black subpixel-antialiased pl-4 lg:pl-0 dark:text-white" id="fillTitle">Project Detail</h1>
+            <div class="pl-4 lg:pl-0 mt-5">
+                <a href="Project.html" class="inline-flex items-center px-4 py-2 rounded-full bg-white dark:bg-neutral-900 text-767676 dark:text-[#999] hover:text-black dark:hover:text-white shadow-sm">
+                    <i class="ri-arrow-left-line mr-2"></i>返回项目列表
+                </a>
+            </div>
+        </div>
+        <div class="flex flex-col lg:flex-row w-full mx-auto page-mqx-width lg:space-x-8 lg:px-[40px]">
+            <article class="page-content lg:w-[73%] block overflow-hidden" id="projectDetail"></article>
+            <aside class="sidebar lg:w-[27%] block overflow-hidden mb-12">
+                <div class="flex flex-col space-y-8">
+                    <div class="widget bg-white w-full p-8 hover:shadow-lg duration-300 dark:bg-neutral-900">
+                        <div class="widget-title text-black font-bold mb-2 dark:text-[#999]"><p>Project Info</p></div>
+                        <div class="widget-hr border-b border-gray-300 w-full mb-4"></div>
+                        <div class="widget-content text-767676 dark:text-[#999]" id="projectInfo"></div>
+                    </div>
+                    <div class="widget bg-white w-full p-8 hover:shadow-lg duration-300 dark:bg-neutral-900">
+                        <div class="widget-title text-black font-bold mb-2 dark:text-[#999]"><p>Other Projects</p></div>
+                        <div class="widget-hr border-b border-gray-300 w-full mb-4"></div>
+                        <div class="widget-content text-767676 dark:text-[#999]"><ul id="otherProjects"></ul></div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+</div>
+
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js" type="application/javascript"></script>
+<script src="../source/js/ion-background.js"></script>
+<script src="../data/loader.js"></script>
+<script>
+    function toggleNav() { $('#mobileNav').slideToggle(500); }
+    function toggleSearch() { $('#search').toggle('.2'); }
+    function toggleDarkMode() {
+        var dark = window.localStorage.getItem('dark');
+        dark = !dark || dark == 0 ? 1 : 0;
+        window.localStorage.setItem('dark', dark);
+        darkMode();
+    }
+    function darkMode() {
+        var dark = window.localStorage.getItem('dark');
+        if (!dark) return;
+        if (dark == 1) $('html').addClass('dark');
+        else $('html').removeClass('dark');
+    }
+    darkMode();
+
+    function esc(value) {
+        return String(value || '').replace(/[&<>"']/g, char => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[char]));
+    }
+    function list(items) {
+        return (items || []).map(item => '<li class="leading-7">' + esc(item) + '</li>').join('');
+    }
+    function chips(items) {
+        return (items || []).map(item => '<span class="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800 text-xs">' + esc(item) + '</span>').join('');
+    }
+    function fallbackProjectData() {
+        const common = {
+            detail: {
+                goal: '用于长期记录项目目标、操作方法、问题排查、图片和附件。',
+                role: '负责项目方案整理、软硬件调试和记录维护。',
+                architecture: ['项目结构见 Project.json，可继续补充。'],
+                operations: ['在 data/projects 对应 md 文件中持续追加操作步骤。'],
+                issues: ['在项目调试过程中记录问题、原因和解决方法。'],
+                next: ['继续补充图片、日志、测试数据和附件。']
+            },
+            gallery: []
+        };
+        return {
+            posts: [
+                { ...common, id: 'starfish', title: '海星五足机器人控制系统', summary: '20 路电机多足机器人控制系统。', tag: '机器人', date: '2026-06', status: '持续迭代', thumbnail: '../images/projects/starfish-main-v2.jpg', tech: ['ESP32S3', 'STM32F429', 'TB6612', 'PCB'], gallery: ['../images/projects/starfish-main-v2.jpg'] },
+                { ...common, id: 'pillbugs', title: 'PILL_BUGS 仿生鼠妇触角粗糙度检测', summary: '仿生触角与粗糙度识别项目。', tag: '视觉感知', date: '2026-06', status: '原型验证', thumbnail: '../images/projects/pillbugs-render.png', tech: ['Raspberry Pi 5', 'STM32', 'ROS2'], gallery: ['../images/projects/pillbugs-render.png'] },
+                { ...common, id: 'ocean-gripper', title: '海洋专项无人装备快速布放回收夹爪', summary: '海洋装备回收夹爪控制项目。', tag: '海洋装备', date: '2026-06', status: '方案开发', thumbnail: '../images/projects/ocean-gripper.png', tech: ['步进电机', '限位', '力反馈'], gallery: ['../images/projects/ocean-gripper.png'] },
+                { ...common, id: 'raspi-car', title: '树莓派 5 视觉小车', summary: '树莓派视觉移动平台。', tag: 'ROS', date: '2026-05', status: '基础平台', thumbnail: '../images/projects/raspi-car.png', tech: ['Raspberry Pi 5', 'ROS2'], gallery: ['../images/projects/raspi-car.png'] },
+                { ...common, id: 'ros-nav', title: 'ROS2 TurtleBot3 / Gazebo / Nav2 导航', summary: 'ROS2 导航仿真流程。', tag: 'ROS', date: '2026-04', status: '已跑通', thumbnail: '../images/projects/ros-nav.png', tech: ['Gazebo', 'TurtleBot3', 'Nav2'], gallery: ['../images/projects/ros-nav.png'] }
+            ]
+        };
+    }
+    function mdToHtml(markdown) {
+        return esc(markdown)
+            .replace(/^# (.*)$/gm, '<h1>$1</h1>')
+            .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+            .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1">')
+            .replace(/^\d+\. (.*)$/gm, '<li>$1</li>')
+            .replace(/^- (.*)$/gm, '<li>$1</li>')
+            .replace(/\n{2,}/g, '</p><p>')
+            .replace(/^/, '<p>')
+            .replace(/$/, '</p>')
+            .replace(/<p><h/g, '<h')
+            .replace(/<\/h([12])><\/p>/g, '</h$1>');
+    }
+
+    async function renderProjectDetail() {
+        const [layout, Project] = await Promise.all([
+            loadData('Layout').catch(error => {
+                console.warn('Layout load failed:', error);
+                return null;
+            }),
+            loadData('Project').catch(error => {
+                console.warn('Project load failed, using fallback:', error);
+                return fallbackProjectData();
+            })
+        ]);
+        if (layout && typeof renderSiteChrome === 'function') renderSiteChrome(layout);
+        const data = { Project };
+        const params = new URLSearchParams(location.search);
+        const id = params.get('id') || (data.Project.posts[0] && data.Project.posts[0].id);
+        const project = (data.Project.posts || []).find(item => item.id === id) || data.Project.posts[0];
+        if (!project) return;
+        const projectList = data.Project.posts || [];
+        const projectIndex = Math.max(0, projectList.findIndex(item => item.id === project.id));
+        const prevProject = projectList[(projectIndex - 1 + projectList.length) % projectList.length];
+        const nextProject = projectList[(projectIndex + 1) % projectList.length];
+        const detail = project.detail || {};
+
+        document.title = project.title + ' - 吴晶';
+        document.getElementById('fillTitle').textContent = project.title;
+
+        let markdownHtml = '';
+        if (project.markdownFile) {
+            try {
+                const response = await fetch(project.markdownFile);
+                if (response.ok) markdownHtml = mdToHtml(await response.text());
+            } catch (error) {
+                markdownHtml = '<p>Markdown 日志暂时无法加载。</p>';
+            }
+        }
+
+        document.getElementById('projectDetail').innerHTML = `
+            <div class="page-item hover:shadow-lg duration-300 mb-12">
+                <div class="page-thumbnail overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+                    <img class="w-full max-h-[430px] object-cover" src="${esc(project.thumbnail || '../images/featured.svg')}" alt="${esc(project.title)}">
+                </div>
+                <div class="page-content bg-white p-4 lg:p-8 text-767676 flex flex-col space-y-6 dark:bg-neutral-900">
+                    <div class="page-meta text-base flex justify-between">
+                        <div><span>${esc(project.tag)}</span><span class="mx-2">/</span><span>${esc(project.date)}</span></div>
+                        <span>${esc(project.status)}</span>
+                    </div>
+                    <div class="border-b border-gray-300 w-full"></div>
+                    <section>
+                        <h2 class="text-2xl font-black text-black dark:text-white mb-3">项目目标</h2>
+                        <p class="leading-8 dark:text-[#999]">${esc(detail.goal || project.summary)}</p>
+                    </section>
+                    <section>
+                        <h2 class="text-2xl font-black text-black dark:text-white mb-3">我的负责内容</h2>
+                        <p class="leading-8 dark:text-[#999]">${esc(detail.role)}</p>
+                    </section>
+                    <section>
+                        <h2 class="text-2xl font-black text-black dark:text-white mb-3">系统结构</h2>
+                        <ul class="list-disc pl-5 dark:text-[#999]">${list(detail.architecture)}</ul>
+                    </section>
+                    <section>
+                        <h2 class="text-2xl font-black text-black dark:text-white mb-3">操作方法</h2>
+                        <ol class="list-decimal pl-5 dark:text-[#999]">${list(detail.operations)}</ol>
+                    </section>
+                    <section>
+                        <h2 class="text-2xl font-black text-black dark:text-white mb-3">遇到的问题</h2>
+                        <ul class="list-disc pl-5 dark:text-[#999]">${list(detail.issues)}</ul>
+                    </section>
+                    <section>
+                        <h2 class="text-2xl font-black text-black dark:text-white mb-3">后续记录</h2>
+                        <ul class="list-disc pl-5 dark:text-[#999]">${list(detail.next)}</ul>
+                    </section>
+                    <section>
+                        <h2 class="text-2xl font-black text-black dark:text-white mb-3">项目图片</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${(project.gallery || []).map(image => '<img class="rounded-lg w-full h-56 object-cover bg-neutral-100 dark:bg-neutral-800" src="' + esc(image) + '" alt="' + esc(project.title) + '">').join('')}
+                        </div>
+                    </section>
+                    <section>
+                        <h2 class="text-2xl font-black text-black dark:text-white mb-3">实例文件</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${(project.attachments || []).map(file => '<a class="block rounded-lg bg-[#f7f8fa] dark:bg-neutral-800 p-4 hover:shadow text-767676 dark:text-[#999]" href="' + esc(file.url) + '" target="_blank"><i class="ri-markdown-line mr-2"></i>' + esc(file.name) + '</a>').join('') || '<p class="dark:text-[#999]">暂无实例文件。</p>'}
+                        </div>
+                    </section>
+                    <section>
+                        <h2 class="text-2xl font-black text-black dark:text-white mb-3">Markdown 项目日志</h2>
+                        <div class="markdown-body bg-[#f7f8fa] dark:bg-neutral-800 rounded-lg p-5">${markdownHtml || '<p>暂无 Markdown 日志。</p>'}</div>
+                    </section>
+                </div>
+            </div>
+            <div class="post-nav flex flex-col md:flex-row justify-between mb-12 gap-4">
+                <div class="prev-post md:w-1/2 text-left hover:shadow-lg bg-white p-5 dark:bg-neutral-900">
+                    <a class="flex flex-col space-y-1" href="post.html?id=${encodeURIComponent(prevProject.id)}">
+                        <p class="text-sm text-767676 dark:text-[#999]"><i class="ri-arrow-left-line mr-1"></i>Previous</p>
+                        <span class="dark:text-white font-semibold">${esc(prevProject.title)}</span>
+                    </a>
+                </div>
+                <div class="next-post md:w-1/2 text-right hover:shadow-lg bg-white p-5 dark:bg-neutral-900">
+                    <a class="flex flex-col space-y-1" href="post.html?id=${encodeURIComponent(nextProject.id)}">
+                        <p class="text-sm text-767676 dark:text-[#999]">Next<i class="ri-arrow-right-line ml-1"></i></p>
+                        <span class="dark:text-white font-semibold">${esc(nextProject.title)}</span>
+                    </a>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('projectInfo').innerHTML = `
+            <div class="space-y-3">
+                <p><span class="font-bold text-black dark:text-white">状态</span><br>${esc(project.status)}</p>
+                <p><span class="font-bold text-black dark:text-white">时间</span><br>${esc(project.date)}</p>
+                <p><span class="font-bold text-black dark:text-white">技术栈</span></p>
+                <div class="flex flex-wrap gap-2">${chips(project.tech)}</div>
+                <p class="pt-3"><span class="font-bold text-black dark:text-white">实例文件</span><br>${(project.attachments || []).length} 个</p>
+                <a class="inline-flex mt-3 hover:text-black dark:hover:text-white" href="Project.html"><i class="ri-arrow-left-line mr-1"></i>返回项目列表</a>
+            </div>
+        `;
+        document.getElementById('otherProjects').innerHTML = (data.Project.posts || []).filter(item => item.id !== project.id).map(item => `
+            <li class="py-1 truncate"><i class="ri-arrow-right-s-fill"></i><a class="hover:text-black dark:hover:text-white" href="post.html?id=${encodeURIComponent(item.id)}">${esc(item.title)}</a></li>
+        `).join('');
+    }
+
+    renderProjectDetail().catch(error => {
+        console.error(error);
+        document.getElementById('projectDetail').innerHTML = '<div class="bg-white dark:bg-neutral-900 p-8 text-767676">项目加载失败，请检查 Project.json。</div>';
+    });
+</script>
+</body>
+</html>

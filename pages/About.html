@@ -1,0 +1,292 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - 吴晶</title>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="renderer" content="webkit">
+    <meta name="theme-color" content="#fff">
+    <meta name="author" content="吴晶"/>
+    <meta name="keywords" content="blog,links,contact"/>
+    <meta name="description" content="About and contact information"/>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"></noscript>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        .page-mqx-width { max-width: 1300px; }
+        .text-767676 { color: #767676; }
+        .about-card { border: 1px solid rgba(0, 0, 0, .06); }
+        .dark .about-card { border-color: rgba(255, 255, 255, .08); }
+        .soft-grid {
+            background-image:
+                linear-gradient(rgba(0,0,0,.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,.035) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+        .dark .soft-grid {
+            background-image:
+                linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+        }
+    </style>
+</head>
+
+<body class="bg-[#f9f9f9] dark:bg-neutral-800">
+<div class="flex flex-col lg:flex-row">
+    <header class="hidden fixed w-[330px] px-16 h-screen space-y-16 lg:flex flex-col justify-center content-start bg-white dark:bg-neutral-900">
+        <div class="logo"><a href="../Home.html" title="wj"><img src="../images/head.jpg" alt="wj" class="w-20 h-20 rounded-full object-cover p-1 bg-white shadow-lg dark:bg-neutral-800"></a></div>
+        <div class="nav">
+            <ul class="text-767676 dark:text-[#999] space-y-2">
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="../Home.html">Home</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="Resume.html">Resume</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="Project.html">Project</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300 text-black dark:text-white font-semibold tracking-wide" href="About.html">About</a></li>
+            </ul>
+        </div>
+        <div class="flex justify-start text-767676 dark:text-[#999] text-lg space-x-3">
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
+        </div>
+        <div class="copyright text-767676 dark-text-[#999]">
+            <p>&copy; 2026 <a class="text-black dark:text-white" href="../Home.html">吴晶</a></p>
+        </div>
+    </header>
+
+    <header class="lg:hidden bg-white sticky top-0 z-50 dark:bg-neutral-900">
+        <div class="flex justify-between p-4">
+            <div class="logo"><a href="../Home.html" title="wj"><img class="w-9 h-9 rounded-full object-cover p-0.5 bg-white shadow dark:bg-neutral-800" src="../images/head.jpg" alt="wj"></a></div>
+            <div class="menu dark:text-[#999] space-x-3">
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
+                <button onclick="toggleNav()"><i class="ri-menu-3-line"></i></button>
+            </div>
+        </div>
+        <div class="mobile-nav right-0 bg-white h-full w-full dark:bg-neutral-900" id="mobileNav" style="display: none">
+            <ul class="text-767676 space-y-6 py-6">
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="../Home.html">Home</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="Resume.html">Resume</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="Project.html">Project</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="About.html">About</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div id="search" style="display: none" class="fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto bg-white dark:bg-neutral-900 z-50 flex justify-center content-center items-center">
+        <div class="absolute right-2 top-2">
+            <button class="text-3xl text-767676 cursor-pointer hover:text-black dark:text-[#999] dark:hover:text-white" onclick="toggleSearch()"><i class="ri-close-circle-line"></i></button>
+        </div>
+        <div class="search-wrap">
+            <form method="get" action="search.html" role="search" class="flex justify-start content-center">
+                <input autocomplete="off" class="border-b border-stone-300 dark:border-[#999] focus:outline-none focus:border-b w-full bg-transparent" type="search" name="keyword" placeholder="Search" required>
+                <button type="submit" class="dark:text-[#999] dark:hover:text-white"><i class="ri-search-2-line"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <div class="flex flex-col lg:pl-[330px] w-full">
+        <div class="page-title my-20 mx-auto page-mqx-width w-full px-4 lg:px-[40px]" id="linksContainer">
+            <h1 class="text-4xl font-black subpixel-antialiased dark:text-white mb-8">About</h1>
+        </div>
+    </div>
+</div>
+
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js" type="application/javascript"></script>
+<script src="../source/js/ion-background.js"></script>
+<script src="../data/loader.js"></script>
+<script>
+    let contentData = {};
+    const fallbackLinksPage = {
+        title: 'About',
+        intro: '联系我。',
+        external_links: [
+            { name: 'GitHub', url: 'https://github.com/wj314', description: '代码托管与开源项目' },
+            { name: 'CSDN', url: 'https://blog.csdn.net/weixin_69782922?type=blog', description: '技术文章与学习笔记' },
+            { name: 'Bilibili', url: 'https://space.bilibili.com/1665281675', description: '视频学习与创作平台' },
+            { name: 'blog', url: 'https://www.wujing.lol', description: '个人博客' },
+        ],
+        contact: {
+            phone: '13427784352',
+            wechat: '13427784352',
+            qq: '2099915224',
+            email: '2099915224@qq.com'
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAllData()
+            .then(data => {
+                contentData = data;
+                renderLinksPage();
+            })
+            .catch(error => {
+                console.error('Error loading content:', error);
+                contentData.About = fallbackLinksPage;
+                renderLinksPage();
+            });
+    });
+
+    function renderLinksPage() {
+        const page = contentData.About;
+        const links = page.external_links;
+        const contact = page.contact;
+        const container = document.getElementById('linksContainer');
+        const primaryLinks = links.slice(0, 3);
+        const moreLinks = links.slice(3);
+        
+        let html = `
+            <section class="relative overflow-hidden bg-white dark:bg-neutral-900 about-card mb-8">
+                <div class="absolute inset-0 soft-grid opacity-80"></div>
+                <div class="relative grid grid-cols-1 lg:grid-cols-[1.35fr_.65fr] gap-8 p-6 lg:p-10">
+                    <div class="flex flex-col justify-between min-h-[280px]">
+                        <div>
+                            <div class="inline-flex items-center gap-2 text-xs uppercase tracking-[.2em] text-767676 dark:text-[#999] mb-5">
+                                <span class="w-8 border-t border-gray-300 dark:border-neutral-700"></span>
+                                Contact & resources
+                            </div>
+                            <h1 class="text-5xl lg:text-6xl font-black subpixel-antialiased dark:text-white leading-tight">${page.title}</h1>
+                            <p class="text-lg text-767676 dark:text-[#999] mt-5 max-w-2xl leading-8">${page.intro}</p>
+                        </div>
+                        <div class="flex flex-wrap gap-3 mt-8">
+                            <a href="mailto:${contact.email}" class="inline-flex items-center gap-2 px-5 py-3 bg-black text-white dark:bg-white dark:text-black hover:shadow-lg duration-300">
+                                <i class="ri-mail-send-line"></i>
+                                <span>Send Email</span>
+                            </a>
+                            <a href="tel:${contact.phone}" class="inline-flex items-center gap-2 px-5 py-3 bg-gray-100 text-black dark:bg-neutral-800 dark:text-white hover:shadow-lg duration-300">
+                                <i class="ri-phone-line"></i>
+                                <span>Call</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="bg-[#f7f7f7] dark:bg-neutral-800 p-6 flex flex-col justify-between about-card">
+                        <img src="../images/head.jpg" alt="吴晶" class="w-20 h-20 rounded-full object-cover p-1 bg-white shadow-lg dark:bg-neutral-800 mb-8">
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-sm text-767676 dark:text-[#999]">Email</p>
+                                <a href="mailto:${contact.email}" class="block text-black dark:text-white font-semibold break-all hover:text-767676 duration-300">${contact.email}</a>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-767676 dark:text-[#999]">Wechat</p>
+                                    <p class="text-black dark:text-white font-semibold">${contact.wechat}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-767676 dark:text-[#999]">QQ</p>
+                                    <p class="text-black dark:text-white font-semibold">${contact.qq}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="grid grid-cols-1 lg:grid-cols-[.9fr_1.1fr] gap-8 mb-8">
+                <div class="bg-white dark:bg-neutral-900 about-card p-6 lg:p-8">
+                    <h2 class="text-2xl font-black text-black dark:text-white mb-2">Find Me</h2>
+                    <p class="text-767676 dark:text-[#999] mb-6 leading-7">更直接的联系方式放在这里。</p>
+                    <div class="space-y-3">
+                        <a href="mailto:${contact.email}" class="flex items-center justify-between gap-4 p-4 bg-[#f7f7f7] dark:bg-neutral-800 hover:shadow-md duration-300">
+                            <span class="flex items-center gap-3 text-black dark:text-white font-semibold"><i class="ri-mail-line text-xl text-gray-500"></i>邮箱</span>
+                            <span class="text-767676 dark:text-[#999] text-sm break-all text-right">${contact.email}</span>
+                        </a>
+                        <a href="tel:${contact.phone}" class="flex items-center justify-between gap-4 p-4 bg-[#f7f7f7] dark:bg-neutral-800 hover:shadow-md duration-300">
+                            <span class="flex items-center gap-3 text-black dark:text-white font-semibold"><i class="ri-phone-line text-xl text-gray-500"></i>电话</span>
+                            <span class="text-767676 dark:text-[#999] text-sm">${contact.phone}</span>
+                        </a>
+                        <div class="flex items-center justify-between gap-4 p-4 bg-[#f7f7f7] dark:bg-neutral-800">
+                            <span class="flex items-center gap-3 text-black dark:text-white font-semibold"><i class="ri-message-3-line text-xl text-gray-500"></i>即时联系</span>
+                            <span class="text-767676 dark:text-[#999] text-sm text-right">微信 ${contact.wechat}<br>QQ ${contact.qq}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-neutral-900 about-card p-6 lg:p-8">
+                    <h2 class="text-2xl font-black text-black dark:text-white mb-2">Main Places</h2>
+                    <p class="text-767676 dark:text-[#999] mb-6 leading-7">主要使用的技术平台和内容入口。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        ${primaryLinks.map((link, index) => `
+                            <a href="${link.url}" target="_blank" class="group bg-[#f7f7f7] dark:bg-neutral-800 p-5 min-h-[150px] flex flex-col justify-between hover:shadow-lg duration-300">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-767676 dark:text-[#999]">0${index + 1}</span>
+                                    <i class="ri-arrow-right-up-line text-xl text-gray-400 group-hover:text-black dark:group-hover:text-white duration-300"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-black dark:text-white">${link.name}</h3>
+                                    <p class="text-sm text-767676 dark:text-[#999] mt-2 leading-6">${link.description}</p>
+                                </div>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white dark:bg-neutral-900 about-card p-6 lg:p-8">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black text-black dark:text-white">Resource Library</h2>
+                        <p class="text-767676 dark:text-[#999] mt-2">更多常用资源，按需快速跳转。</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${moreLinks.map(link => `
+                        <a href="${link.url}" target="_blank" class="flex items-center justify-between gap-4 p-5 bg-[#f7f7f7] dark:bg-neutral-800 hover:shadow-md duration-300 group">
+                            <div>
+                                <h3 class="font-bold text-black dark:text-white">${link.name}</h3>
+                                <p class="text-sm text-767676 dark:text-[#999] mt-1">${link.description}</p>
+                            </div>
+                            <i class="ri-arrow-right-up-line text-xl text-gray-400 group-hover:text-black dark:group-hover:text-white duration-300"></i>
+                        </a>
+                    `).join('')}
+                </div>
+            </section>
+        `;
+        container.innerHTML = html;
+    }
+
+    function toggleNav() { $('#mobileNav').slideToggle(500); }
+    function toggleSearch() { $('#search').toggle('.2'); }
+    function toggleDarkMode() {
+        var dark = window.localStorage.getItem('dark');
+        dark = !dark || dark == 0 ? 1 : 0;
+        window.localStorage.setItem('dark', dark);
+        darkMode();
+    }
+    function darkMode() {
+        var dark = window.localStorage.getItem('dark');
+        if (!dark) return;
+        if (dark == 1) $('html').addClass('dark');
+        else $('html').removeClass('dark');
+    }
+    darkMode();
+    $(function() {
+        var url = location.href;
+        $(".nav li a").each(function() {
+            if ((url + '/').indexOf($(this).attr('href').replace('.html', '')) > -1 && $(this).attr('href').replace('.html', '') != '/') {
+                $(this).addClass('text-black dark:text-white font-semibold tracking-wide');
+            } else {
+                $(this).removeClass('text-black dark:text-white font-semibold tracking-wide');
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

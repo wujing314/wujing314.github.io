@@ -1,0 +1,374 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume - 吴晶</title>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="renderer" content="webkit">
+    <meta name="theme-color" content="#fff">
+    <meta name="author" content="吴晶"/>
+    <meta name="keywords" content="about,profile,developer"/>
+    <meta name="description" content="吴晶的个人简历 - 控制工程、嵌入式系统与物联网方向"/>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"></noscript>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        .page-mqx-width { max-width: 1300px; }
+        .text-767676 { color: #767676; }
+        .resume-card { border: 1px solid rgba(15, 23, 42, 0.08); }
+        .dark .resume-card { border-color: rgba(255, 255, 255, 0.08); }
+        .resume-kicker { letter-spacing: .18em; }
+        .resume-dot { box-shadow: 0 0 0 6px rgba(59, 130, 246, .12); }
+    </style>
+</head>
+
+<body class="bg-[#f9f9f9] dark:bg-neutral-800">
+<div class="flex flex-col lg:flex-row">
+    <header class="hidden fixed w-[330px] px-16 h-screen space-y-16 lg:flex flex-col justify-center content-start bg-white dark:bg-neutral-900">
+        <div class="logo"><a href="../Home.html" title="wj"><img src="../images/head.jpg" alt="wj" class="w-20 h-20 rounded-full object-cover p-1 bg-white shadow-lg dark:bg-neutral-800"></a></div>
+        <div class="nav">
+            <ul class="text-767676 dark:text-[#999] space-y-2">
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="../Home.html">Home</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300 text-black dark:text-white font-semibold tracking-wide" href="Resume.html">Resume</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="Project.html">Project</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="About.html">About</a></li>
+            </ul>
+        </div>
+        <div class="flex justify-start text-767676 dark:text-[#999] text-lg space-x-3">
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
+        </div>
+        <div class="copyright text-767676 dark-text-[#999]">
+            <p>&copy; 2026 <a class="text-black dark:text-white" href="../Home.html">吴晶</a></p>
+        </div>
+    </header>
+
+    <header class="lg:hidden bg-white sticky top-0 z-50 dark:bg-neutral-900">
+        <div class="flex justify-between p-4">
+            <div class="logo"><a href="../Home.html" title="wj"><img class="w-9 h-9 rounded-full object-cover p-0.5 bg-white shadow dark:bg-neutral-800" src="../images/head.jpg" alt="wj"></a></div>
+            <div class="menu dark:text-[#999] space-x-3">
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
+                <button onclick="toggleNav()"><i class="ri-menu-3-line"></i></button>
+            </div>
+        </div>
+        <div class="mobile-nav right-0 bg-white h-full w-full dark:bg-neutral-900" id="mobileNav" style="display: none">
+            <ul class="text-767676 space-y-6 py-6">
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="../Home.html">Home</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="Resume.html">Resume</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="Project.html">Project</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="About.html">About</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div id="search" style="display: none" class="fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto bg-white dark:bg-neutral-900 z-50 flex justify-center content-center items-center">
+        <div class="absolute right-2 top-2">
+            <button class="text-3xl text-767676 cursor-pointer hover:text-black dark:text-[#999] dark:hover:text-white" onclick="toggleSearch()"><i class="ri-close-circle-line"></i></button>
+        </div>
+        <div class="search-wrap">
+            <form method="get" action="search.html" role="search" class="flex justify-start content-center">
+                <input autocomplete="off" class="border-b border-stone-300 dark:border-[#999] focus:outline-none focus:border-b w-full bg-transparent" type="search" name="keyword" placeholder="Search" required>
+                <button type="submit" class="dark:text-[#999] dark:hover:text-white"><i class="ri-search-2-line"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <div class="flex flex-col lg:pl-[330px] w-full">
+        <div class="page-title my-20 mx-auto page-mqx-width w-full lg:px-[40px]" id="contentContainer">
+            <h1 class="text-4xl font-black subpixel-antialiased pl-4 lg:pl-0 dark:text-white mb-8" id="pageTitle">Resume</h1>
+        </div>
+    </div>
+</div>
+
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js" type="application/javascript"></script>
+<script src="../source/js/ion-background.js"></script>
+<script src="../data/loader.js"></script>
+<script>
+    let contentData = {};
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadData('Layout')
+            .then(layout => {
+                contentData.Layout = layout;
+                renderSiteChrome(layout);
+            })
+            .catch(error => console.error('Error loading layout:', error));
+
+        loadData('Resume')
+            .then(Resume => {
+                contentData.Resume = Resume;
+                renderResumePage();
+            })
+            .catch(error => {
+                console.error('Error loading resume:', error);
+                showFallbackContent();
+            });
+    });
+
+    function listItems(items) {
+        return (items || []).map(item => `<li class="leading-7">${item}</li>`).join('');
+    }
+
+    function chips(items, color = 'bg-slate-100 text-slate-700 dark:bg-neutral-800 dark:text-neutral-200') {
+        return (items || []).map(item => `<span class="px-3 py-1.5 rounded-full text-sm ${color}">${item}</span>`).join('');
+    }
+
+    function renderResumePage() {
+        const container = document.getElementById('contentContainer');
+        const resume = contentData.Resume || {};
+        const profile = resume.profile || {};
+        const contact = resume.contact || {};
+        const stats = resume.stats || [];
+        const education = resume.education || [];
+
+        container.innerHTML = `
+            <section class="px-4 lg:px-0">
+                <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-10 mb-8">
+                    <div class="grid grid-cols-1 xl:grid-cols-[1fr_330px] gap-8 items-start">
+                        <div>
+                            <p class="resume-kicker text-xs font-bold uppercase text-blue-500 mb-4">${resume.subtitle || 'Resume'}</p>
+                            <h1 class="text-4xl lg:text-5xl font-black subpixel-antialiased dark:text-white mb-4">${profile.name || '吴晶'}</h1>
+                            <p class="text-lg text-neutral-700 dark:text-neutral-300 mb-5">${profile.title || ''}</p>
+                            <p class="text-767676 dark:text-neutral-400 leading-8">${profile.bio || ''}</p>
+                            <div class="flex flex-wrap gap-3 mt-6">
+                                ${chips([profile.expected_work, profile.research, profile.location].filter(Boolean), 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-200')}
+                            </div>
+                        </div>
+                        <aside class="bg-[#f7f8fa] dark:bg-neutral-800 rounded-lg p-5">
+                            <img src="../images/avatar.jpg" alt="${profile.name || 'avatar'}" class="w-28 h-28 rounded-full object-cover mb-5">
+                            <div class="space-y-3 text-sm text-neutral-700 dark:text-neutral-300">
+                                <p><span class="font-semibold text-black dark:text-white">学校</span><br>${profile.school || ''}</p>
+                                <p><span class="font-semibold text-black dark:text-white">学院</span><br>${profile.college || ''}</p>
+                                <p><span class="font-semibold text-black dark:text-white">专业</span><br>${profile.major || ''}</p>
+                                <p><span class="font-semibold text-black dark:text-white">生日 / 籍贯</span><br>${profile.birthday || ''} / ${profile.origin || ''}</p>
+                                <div class="border-t border-neutral-200 dark:border-neutral-700 pt-4 space-y-1">
+                                    <p><i class="ri-phone-line mr-2"></i>${contact.phone || ''}</p>
+                                    <p><i class="ri-mail-line mr-2"></i>${contact.email || ''}</p>
+                                    <p><i class="ri-wechat-line mr-2"></i>${contact.wechat || ''}</p>
+                                    <p><i class="ri-github-line mr-2"></i><a class="hover:text-black dark:hover:text-white" href="${contact.github || '#'}" target="_blank">${contact.github || ''}</a></p>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    ${stats.map(item => `
+                        <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-5">
+                            <div class="text-3xl font-black text-blue-500">${item.value}</div>
+                            <div class="text-sm text-767676 mt-2">${item.label}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-8 mb-8">
+                    <div class="flex items-baseline justify-between gap-4 mb-5">
+                        <h2 class="text-2xl font-black dark:text-white">Education</h2>
+                        <span class="text-xs font-semibold text-blue-500">Academic Timeline</span>
+                    </div>
+                    ${education[0] ? `
+                        <article class="overflow-hidden rounded-lg bg-[#f7f8fa] dark:bg-neutral-800 mb-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-1 p-1">
+                                ${(education[0].images || [education[0].image]).slice(0, 2).map((image, imageIndex) => `
+                                    <div class="relative h-40 md:h-48 overflow-hidden ${imageIndex === 0 ? 'md:rounded-l-md' : 'md:rounded-r-md'} rounded-md">
+                                        <img src="${image || '../images/featured.svg'}" alt="${imageIndex === 0 ? '广东工业大学' : '中山大学'}" class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent"></div>
+                                        <div class="absolute left-4 right-4 bottom-4">
+                                            <p class="text-xs font-semibold text-white/80">${imageIndex === 0 ? '广东工业大学' : '中山大学'}</p>
+                                            <p class="text-lg font-black text-white mt-1">${imageIndex === 0 ? 'GDUT' : 'SYSU'}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="p-4 lg:p-5">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                    <div>
+                                        <p class="text-xs font-semibold text-blue-500">${education[0].period}</p>
+                                        <h3 class="text-xl font-black text-black dark:text-white mt-1">${education[0].degree}</h3>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-200 text-xs font-black self-start sm:self-auto">联合培养</span>
+                                </div>
+                                <p class="text-sm text-767676 dark:text-neutral-400 mt-2 leading-6">${education[0].school}</p>
+                            </div>
+                        </article>
+                    ` : ''}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        ${education.slice(1).map((edu, index) => `
+                            <article class="overflow-hidden rounded-lg bg-[#f7f8fa] dark:bg-neutral-800">
+                                <div class="relative h-28">
+                                    <img src="${edu.image || '../images/featured.svg'}" alt="${edu.school}" class="w-full h-full object-cover">
+                                    <span class="absolute left-3 top-3 px-2 py-0.5 rounded-full bg-white/90 text-blue-600 dark:bg-neutral-950/85 dark:text-blue-200 text-[10px] font-black shadow-sm">${String(index + 2).padStart(2, '0')}</span>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <p class="text-xs font-semibold text-blue-500">${edu.period}</p>
+                                        <span class="text-[11px] text-767676 dark:text-neutral-500">${edu.degree}</span>
+                                    </div>
+                                    <p class="text-sm font-bold text-black dark:text-white mt-2 leading-5">${edu.school}</p>
+                                </div>
+                            </article>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-8 mb-8">
+                    <h2 class="text-2xl font-black dark:text-white mb-6">Skill Matrix</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${(resume.skillGroups || []).map(group => `
+                            <div class="bg-[#f7f8fa] dark:bg-neutral-800 rounded-lg p-5">
+                                <h3 class="font-bold text-black dark:text-white mb-3">${group.title}</h3>
+                                <ul class="list-disc pl-5 text-sm text-767676 dark:text-neutral-400 space-y-1">${listItems(group.items)}</ul>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-6">
+                        ${chips(resume.skill_tags || [])}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-8">
+                        <h2 class="text-2xl font-black dark:text-white mb-6">Learning Path</h2>
+                        <div class="space-y-5">
+                            ${(resume.learning || []).map(item => `
+                                <div>
+                                    <p class="text-sm text-blue-500 font-semibold">${item.period}</p>
+                                    <h3 class="font-bold text-black dark:text-white">${item.stage}</h3>
+                                    <p class="text-767676 dark:text-neutral-400 leading-7 mt-1">${item.description}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-8">
+                        <h2 class="text-2xl font-black dark:text-white mb-6">Internship</h2>
+                        <div class="space-y-6">
+                            ${(resume.work || []).map(job => `
+                                <div class="border-b border-neutral-100 dark:border-neutral-800 last:border-0 pb-5 last:pb-0">
+                                    <p class="text-sm text-blue-500 font-semibold">${job.period}</p>
+                                    <h3 class="font-bold text-black dark:text-white">${job.company}</h3>
+                                    <p class="text-767676 dark:text-neutral-400">${job.role}</p>
+                                    <ul class="list-disc pl-5 text-sm text-767676 dark:text-neutral-400 mt-2">${listItems(job.details)}</ul>
+                                    ${job.link ? `<a class="inline-flex items-center text-sm text-blue-500 mt-2 hover:text-blue-700" href="${job.link}" target="_blank">作品链接 <i class="ri-arrow-right-up-line ml-1"></i></a>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-8 mb-8">
+                    <h2 class="text-2xl font-black dark:text-white mb-6">Project Experience</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        ${(resume.projects || []).map(project => `
+                            <article class="bg-[#f7f8fa] dark:bg-neutral-800 rounded-lg p-5">
+                                <div class="flex items-start justify-between gap-4 mb-3">
+                                    <h3 class="font-bold text-black dark:text-white">${project.name}</h3>
+                                    <span class="text-xs text-blue-500 whitespace-nowrap">${project.type || ''}</span>
+                                </div>
+                                <p class="text-767676 dark:text-neutral-400 leading-7">${project.description}</p>
+                                <div class="flex flex-wrap gap-2 mt-4">${chips(project.tech || project.highlights || [], 'bg-white text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300')}</div>
+                            </article>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-[1.2fr_.8fr] gap-8 mb-8">
+                    <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-8">
+                        <h2 class="text-2xl font-black dark:text-white mb-6">Awards</h2>
+                        <div class="space-y-4">
+                            ${(resume.awards || []).map(award => `
+                                <div class="grid grid-cols-[92px_1fr] gap-4 border-b border-neutral-100 dark:border-neutral-800 last:border-0 pb-4 last:pb-0">
+                                    <span class="text-sm text-blue-500 font-semibold">${award.date}</span>
+                                    <div>
+                                        <h3 class="font-bold text-black dark:text-white">${award.name}</h3>
+                                        <p class="text-767676 dark:text-neutral-400">${award.level}</p>
+                                        ${award.description ? `<p class="text-sm text-767676 dark:text-neutral-500 mt-1 leading-6">${award.description}</p>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="space-y-8">
+                        <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-8">
+                            <h2 class="text-2xl font-black dark:text-white mb-4">Certificates</h2>
+                            <ul class="list-disc pl-5 text-767676 dark:text-neutral-400">${listItems(resume.certificates)}</ul>
+                        </div>
+                        <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-8">
+                            <h2 class="text-2xl font-black dark:text-white mb-4">Interests</h2>
+                            <div class="flex flex-wrap gap-2">${chips(resume.interests || [])}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    function showFallbackContent() {
+        const container = document.getElementById('contentContainer');
+
+        loadData('Resume')
+            .then(Resume => {
+                contentData.Resume = Resume;
+                renderResumePage();
+            })
+            .catch(error => {
+                console.error('Error loading Resume.json:', error);
+                container.innerHTML = `
+                    <section class="px-4 lg:px-0">
+                        <div class="bg-white dark:bg-neutral-900 resume-card rounded-lg p-6 lg:p-8">
+                            <h1 class="text-3xl font-black dark:text-white mb-3">Resume</h1>
+                            <p class="text-767676 dark:text-neutral-400">Resume.json 加载失败，请检查 data/Resume.json 是否存在且 JSON 格式正确。</p>
+                        </div>
+                    </section>
+                `;
+            });
+    }
+
+    function toggleNav() { $('#mobileNav').slideToggle(500); }
+    function toggleSearch() { $('#search').toggle('.2'); }
+    function toggleDarkMode() {
+        var dark = window.localStorage.getItem('dark');
+        dark = !dark || dark == 0 ? 1 : 0;
+        window.localStorage.setItem('dark', dark);
+        darkMode();
+    }
+    function darkMode() {
+        var dark = window.localStorage.getItem('dark');
+        if (!dark) return;
+        if (dark == 1) $('html').addClass('dark');
+        else $('html').removeClass('dark');
+    }
+    darkMode();
+    $(function() {
+        var url = location.href;
+        $(".nav li a").each(function() {
+            if ((url + '/').indexOf($(this).attr('href').replace('.html', '')) > -1 && $(this).attr('href').replace('.html', '') != '/') {
+                $(this).addClass('text-black dark:text-white font-semibold tracking-wide');
+            } else {
+                $(this).removeClass('text-black dark:text-white font-semibold tracking-wide');
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

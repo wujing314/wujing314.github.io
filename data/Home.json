@@ -1,0 +1,32 @@
+{
+    "title": "Home",
+    "profile": {
+        "name": "吴晶",
+        "school": "广东工业大学 & 中山大学",
+        "class": "控制工程",
+        "title": "DIY爱好者",
+        "email": "2099915224@qq.com"
+    },
+    "social": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/wujjjj",
+            "icon": "ri-github-line"
+        },
+        {
+            "name": "CSDN",
+            "url": "https://blog.csdn.net/wujing_dev",
+            "icon": "ri-code-s-slash-line"
+        },
+        {
+            "name": "Email",
+            "url": "mailto:2099915224@qq.com",
+            "icon": "ri-mail-line"
+        },
+        {
+            "name": "Bilibili",
+            "url": "https://space.bilibili.com/wujing-tech",
+            "icon": "ri-bilibili-line"
+        }
+    ]
+}

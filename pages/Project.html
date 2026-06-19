@@ -1,0 +1,283 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project - 吴晶</title>
+    <meta name="author" content="吴晶"/>
+    <meta name="keywords" content="blog,project"/>
+    <meta name="description" content="Project list"/>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"></noscript>
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/11.4.0/styles/github.min.css" type="text/css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        .page-mqx-width { max-width: 1300px; }
+        .text-767676 { color: #767676; }
+        .hljs { background: #f6f8fa; }
+        .project-cover {
+            width: 220px;
+            min-height: 150px;
+            margin: 14px 0 14px 14px;
+            padding: 7px;
+            border-radius: 22px;
+            border: 1px solid rgba(15, 23, 42, .08);
+            background: linear-gradient(145deg, rgba(255,255,255,.95), rgba(241,245,249,.9));
+            box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
+        }
+        .project-cover img { border-radius: 16px; }
+        .dark .project-cover {
+            border-color: rgba(255, 255, 255, .08);
+            background: linear-gradient(145deg, rgba(38,38,38,.98), rgba(23,23,23,.92));
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .22);
+        }
+        @media (max-width: 768px) {
+            .project-cover { width: auto; min-height: 180px; margin: 14px; }
+        }
+        .filter-tag.active {
+            color: #111827;
+            background: #f3f4f6;
+            font-weight: 700;
+        }
+        .dark .filter-tag.active {
+            color: #fff;
+            background: #262626;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f9f9f9] dark:bg-neutral-800">
+<div class="flex flex-col lg:flex-row">
+    <header class="hidden fixed w-[330px] px-16 h-screen space-y-16 lg:flex flex-col justify-center content-start bg-white dark:bg-neutral-900">
+        <div class="logo"><a href="../Home.html" title="wj"><img src="../images/head.jpg" alt="wj" class="w-20 h-20 rounded-full object-cover p-1 bg-white shadow-lg dark:bg-neutral-800"></a></div>
+        <div class="nav">
+            <ul class="text-767676 dark:text-[#999] space-y-2">
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="../Home.html">Home</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="Resume.html">Resume</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300 text-black dark:text-white font-semibold tracking-wide" href="Project.html">Project</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="About.html">About</a></li>
+            </ul>
+        </div>
+        <div class="flex justify-start text-767676 dark:text-[#999] text-lg space-x-3">
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
+        </div>
+        <div class="copyright text-767676 dark-text-[#999]">
+            <p>&copy; 2026 <a class="text-black dark:text-white" href="../Home.html">吴晶</a></p>
+        </div>
+    </header>
+
+    <header class="lg:hidden bg-white sticky top-0 z-50 dark:bg-neutral-900">
+        <div class="flex justify-between p-4">
+            <div class="logo"><a href="../Home.html" title="wj"><img class="w-9 h-9 rounded-full object-cover p-0.5 bg-white shadow dark:bg-neutral-800" src="../images/head.jpg" alt="wj"></a></div>
+            <div class="menu dark:text-[#999] space-x-3">
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()"><i class="ri-contrast-2-line" id="darkModelIcon"></i></button>
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()"><i class="ri-search-2-line"></i></button>
+                <button onclick="toggleNav()"><i class="ri-menu-3-line"></i></button>
+            </div>
+        </div>
+        <div class="mobile-nav right-0 bg-white h-full w-full dark:bg-neutral-900" id="mobileNav" style="display: none">
+            <ul class="text-767676 space-y-6 py-6">
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="../Home.html">Home</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="Resume.html">Resume</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="Project.html">Project</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="About.html">About</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div id="search" style="display: none" class="fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto bg-white dark:bg-neutral-900 z-50 flex justify-center content-center items-center">
+        <div class="absolute right-2 top-2">
+            <button class="text-3xl text-767676 cursor-pointer hover:text-black dark:text-[#999] dark:hover:text-white" onclick="toggleSearch()"><i class="ri-close-circle-line"></i></button>
+        </div>
+        <div class="search-wrap">
+            <form method="get" action="search.html" role="search" class="flex justify-start content-center">
+                <input autocomplete="off" class="border-b border-stone-300 dark:border-[#999] focus:outline-none focus:border-b w-full bg-transparent" type="search" name="keyword" placeholder="Search" required>
+                <button type="submit" class="dark:text-[#999] dark:hover:text-white"><i class="ri-search-2-line"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <div class="flex flex-col lg:pl-[330px] w-full">
+        <div class="page-title my-20 mx-auto page-mqx-width w-full lg:px-[40px]">
+            <h1 class="text-4xl font-black subpixel-antialiased pl-4 lg:pl-0 dark:text-white" id="pageTitle">Project</h1>
+        </div>
+        <div class="flex flex-col lg:flex-row w-full mx-auto page-mqx-width lg:space-x-8 lg:px-[40px]">
+            <div class="page-content lg:w-[73%] block overflow-hidden" id="postsContainer"></div>
+
+            <div class="sidebar lg:w-[27%] block overflow-hidden mb-12">
+                <div class="flex flex-col space-y-12">
+                    <div class="widget bg-white w-full p-8 hover:shadow-lg duration-300 dark:bg-neutral-900">
+                        <div class="widget-title text-black font-bold mb-2 dark:text-[#999]"><p>Project Index</p></div>
+                        <div class="widget-hr border-b border-gray-300 w-full mb-4"></div>
+                        <div class="widget-content text-767676 dark:text-[#999]">
+                            <ul id="hotPosts"></ul>
+                        </div>
+                    </div>
+
+                    <div class="widget bg-white w-full p-8 hover:shadow-lg duration-300 dark:bg-neutral-900">
+                        <div class="widget-title text-black font-bold mb-2 dark:text-[#999]"><p>Tags</p></div>
+                        <div class="widget-hr border-b border-gray-300 w-full mb-4"></div>
+                        <div class="widget-content text-767676 dark:text-[#999]">
+                            <div class="flex flex-wrap gap-2" id="tagFilters"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js" type="application/javascript"></script>
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/11.4.0/highlight.min.js" type="application/javascript"></script>
+<script src="../source/js/ion-background.js"></script>
+<script src="../data/loader.js"></script>
+<script>
+    if (window.hljs) hljs.highlightAll();
+
+    function toggleNav() { $('#mobileNav').slideToggle(500); }
+    function toggleSearch() { $('#search').toggle('.2'); }
+    function toggleDarkMode() {
+        var dark = window.localStorage.getItem('dark');
+        dark = !dark || dark == 0 ? 1 : 0;
+        window.localStorage.setItem('dark', dark);
+        darkMode();
+    }
+    function darkMode() {
+        var dark = window.localStorage.getItem('dark');
+        if (!dark) return;
+        if (dark == 1) $('html').addClass('dark');
+        else $('html').removeClass('dark');
+    }
+    darkMode();
+
+    function fallbackProjectData() {
+        return {
+            title: 'Project',
+            posts: [
+                { id: 'starfish', title: '海星五足机器人控制系统', summary: 'ESP32S3 主控 + STM32F429 驱动板，面向 20 路带编码器直流电机的多足机器人控制系统。', tag: '机器人', date: '2026-06', status: '持续迭代', thumbnail: '../images/projects/starfish-main-v2.jpg', tech: ['ESP32S3', 'STM32F429', 'TB6612', 'PCB', 'PID', 'PS2'] },
+                { id: 'pillbugs', title: 'PILL_BUGS 仿生鼠妇触角粗糙度检测', summary: '基于仿生触角、压电/应变传感器、树莓派 5 和 STM32 的粗糙度识别项目。', tag: '视觉感知', date: '2026-06', status: '原型验证', thumbnail: '../images/projects/pillbugs-render.png', tech: ['Raspberry Pi 5', 'STM32', 'ROS2', 'ADC'] },
+                { id: 'ocean-gripper', title: '海洋专项无人装备快速布放回收夹爪', summary: '复杂风浪条件下无人装备快速布放回收技术，重点关注夹爪执行层与电机驱动。', tag: '海洋装备', date: '2026-06', status: '方案开发', thumbnail: '../images/projects/ocean-gripper.png', tech: ['步进电机', 'STEP/DIR', '限位', '力反馈'] },
+                { id: 'raspi-car', title: '树莓派 5 视觉小车', summary: '完成 Linux、ROS2、摄像头、网页控制和电机驱动基础链路。', tag: 'ROS', date: '2026-05', status: '基础平台', thumbnail: '../images/projects/raspi-car.png', tech: ['Raspberry Pi 5', 'Linux', 'ROS2', 'Web 控制'] },
+                { id: 'ros-nav', title: 'ROS2 TurtleBot3 / Gazebo / Nav2 导航', summary: '跑通 Gazebo、TurtleBot3、SLAM Toolbox、Nav2、地图保存和目标点导航流程。', tag: 'ROS', date: '2026-04', status: '已跑通', thumbnail: '../images/projects/ros-nav.png', tech: ['ROS Jazzy', 'Gazebo', 'TurtleBot3', 'Nav2'] }
+            ]
+        };
+    }
+
+    let allProjectPosts = [];
+    let activeProjectTag = '全部';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        Promise.all([
+            loadData('Layout').catch(error => {
+                console.warn('Layout load failed:', error);
+                return null;
+            }),
+            loadData('Project')
+        ])
+            .then(([layout, Project]) => {
+                if (layout && typeof renderSiteChrome === 'function') renderSiteChrome(layout);
+                renderArchivePage({ Project });
+            })
+            .catch(error => {
+                console.error('Error loading project content:', error);
+                renderArchivePage({ Project: fallbackProjectData() });
+            });
+    });
+
+    function renderArchivePage(data) {
+        allProjectPosts = data.Project.posts || [];
+        const posts = activeProjectTag === '全部'
+            ? allProjectPosts
+            : allProjectPosts.filter(post => post.tag === activeProjectTag || (post.tech || []).includes(activeProjectTag));
+        const popularPosts = data.Project.posts || [];
+
+        document.getElementById('pageTitle').textContent = data.Project.title;
+
+        const postsContainer = document.getElementById('postsContainer');
+        let postsHtml = '';
+        
+        if (!posts.length) {
+            postsHtml = '<div class="bg-white dark:bg-neutral-900 p-8 mb-12 text-767676 dark:text-[#999]">当前标签下暂无项目。</div>';
+        }
+
+        posts.forEach(post => {
+            const href = 'post.html?id=' + encodeURIComponent(post.id);
+            postsHtml += '<div class="page-item hover:shadow-lg duration-300 mb-8 bg-white dark:bg-neutral-900 flex flex-col md:flex-row overflow-hidden">';
+            postsHtml += '<div class="page-thumbnail project-cover shrink-0"><a href="' + href + '" title="' + post.title + '"><img class="ease duration-300 w-full h-full object-cover hover:scale-105" src="' + (post.thumbnail || '../images/featured.svg') + '" alt="' + post.title + '"></a></div>';
+            postsHtml += '<div class="page-content p-4 lg:p-6 text-767676 flex flex-col justify-center space-y-3 min-w-0 flex-1">';
+            postsHtml += '<div class="page-meta text-[##767676] text-base flex justify-between">';
+            postsHtml += '<div><span class="mr-1"><a href="Project.html">' + post.tag + '</a></span><span class="mr-1">/</span><span>' + post.date + '</span></div><span>' + (post.status || '') + '</span>';
+            postsHtml += '</div><div class="border-b border-gray-300 w-full"></div>';
+            postsHtml += '<div class="title text-black dark:text-white"><a href="' + href + '" title="' + post.title + '"><h2 class="text-2xl font-semibold">' + post.title + '</h2></a></div>';
+            postsHtml += '<div class="page-summary dark:text-[#999] text-sm leading-7"><p>' + post.summary + '</p></div>';
+            postsHtml += '<div class="flex flex-wrap gap-2">' + (post.tech || []).slice(0, 5).map(tag => '<button class="filter-tag text-xs px-2 py-1 rounded bg-[#f7f8fa] dark:bg-neutral-800 text-767676" data-tag="' + tag + '">' + tag + '</button>').join('') + '</div>';
+            postsHtml += '</div></div>';
+        });
+        
+        postsHtml += '<div class="bg-white p-4 hover:shadow-lg duration-300 mb-12 dark:bg-neutral-900 text-center text-767676 dark:text-[#999]">当前显示 ' + posts.length + ' / ' + allProjectPosts.length + ' 个项目档案。</div>';
+        
+        postsContainer.innerHTML = postsHtml;
+
+        const popularPostsContainer = document.getElementById('hotPosts');
+        let popularHtml = '<ul>';
+        popularPosts.forEach(post => {
+            popularHtml += '<li class="py-1 flex justify-start w-full space-x-1"><div class="truncate block"><i class="ri-arrow-right-s-fill"></i><a class="hover:text-black dark:hover:text-white" href="post.html?id=' + encodeURIComponent(post.id) + '">' + post.title + '</a></div></li>';
+        });
+        popularHtml += '</ul>';
+        popularPostsContainer.innerHTML = popularHtml;
+
+        renderTagFilters(allProjectPosts);
+        bindFilterButtons();
+    }
+
+    function renderTagFilters(posts) {
+        const tagSet = new Set(['全部']);
+        (posts || []).forEach(post => {
+            if (post.tag) tagSet.add(post.tag);
+            (post.tech || []).slice(0, 4).forEach(tag => tagSet.add(tag));
+        });
+        const container = document.getElementById('tagFilters');
+        container.innerHTML = Array.from(tagSet).map(tag => (
+            '<button class="filter-tag px-3 py-1.5 rounded-full text-sm bg-[#f7f8fa] dark:bg-neutral-800 hover:text-black dark:hover:text-white ' + (tag === activeProjectTag ? 'active' : '') + '" data-tag="' + tag + '">' + tag + '</button>'
+        )).join('');
+    }
+
+    function bindFilterButtons() {
+        document.querySelectorAll('.filter-tag').forEach(button => {
+            button.onclick = function() {
+                activeProjectTag = this.getAttribute('data-tag') || '全部';
+                renderArchivePage({ Project: { title: document.getElementById('pageTitle').textContent || 'Project', posts: allProjectPosts } });
+            };
+        });
+    }
+    $(function() {
+        var url = location.href;
+        $(".nav li a").each(function() {
+            if ((url + '/').indexOf($(this).attr('href').replace('.html', '')) > -1 && $(this).attr('href').replace('.html', '') != '/') {
+                $(this).addClass('text-black dark:text-white font-semibold tracking-wide');
+            } else {
+                $(this).removeClass('text-black dark:text-white font-semibold tracking-wide');
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

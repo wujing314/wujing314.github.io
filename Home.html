@@ -1,0 +1,244 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吴晶 - Personal Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="renderer" content="webkit">
+    <meta name="theme-color" content="#fff">
+    <meta name="author" content="吴晶"/>
+    <meta name="keywords" content="blog,technology,sharing"/>
+    <meta name="description" content="吴晶的个人博客 - DIY爱好"/>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"></noscript>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        .mouse-cursor {
+            position: fixed; left: 0; top: 0; pointer-events: none;
+            border-radius: 50%; -webkit-transform: translateZ(0);
+            transform: translateZ(0); visibility: hidden;
+        }
+
+        .cursor-outer {
+            margin-left: -15px; margin-top: -15px;
+            width: 30px; height: 30px; z-index: 50;
+            border: 2px solid rgba(0, 0, 0, 0.5);
+            box-sizing: border-box; opacity: .5;
+            transition: all .08s ease-out;
+        }
+
+        .cursor-inner {
+            margin-left: -3px; margin-top: -3px;
+            width: 5px; height: 5px; z-index: 50;
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: width .3s ease-in-out, height .3s ease-in-out, margin .3s ease-in-out, opacity .3s ease-in-out;
+        }
+
+        .cursor-outer.cursor-hover { opacity: 0; }
+        .cursor-inner.cursor-hover {
+            margin-left: -40px; margin-top: -40px;
+            width: 80px; height: 80px;
+            background-color: rgba(0, 0, 0, 0.5); opacity: .3;
+        }
+
+        @keyframes morph {
+            0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+            100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+        }
+
+        .animation-morph { animation: morph 8s ease-in-out infinite 1s }
+        .page-mqx-width { max-width: 1300px; }
+        .text-767676 { color: #767676; }
+    </style>
+</head>
+
+<body class="bg-[#f9f9f9] dark:bg-neutral-800">
+<div class="flex flex-col lg:flex-row">
+    <header class="hidden fixed w-[330px] px-16 h-screen space-y-16 lg:flex flex-col justify-center content-start bg-white dark:bg-neutral-900">
+        <div class="logo">
+            <a href="Home.html" title="wj">
+                <img src="images/head.jpg" alt="wj" class="w-20 h-20 rounded-full object-cover p-1 bg-white shadow-lg dark:bg-neutral-800">
+            </a>
+        </div>
+        <div class="nav">
+            <ul class="text-767676 dark:text-[#999] space-y-2">
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300 text-black dark:text-white font-semibold tracking-wide" href="Home.html">Home</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="pages/Resume.html">Resume</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="pages/Project.html">Project</a></li>
+                <li><a class="hover:text-black dark:hover:text-white block w-full hover:tracking-wider duration-300" href="pages/About.html">About</a></li>
+            </ul>
+        </div>
+        <div class="flex justify-start text-767676 dark:text-[#999] text-lg space-x-3">
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()">
+                <i class="ri-contrast-2-line" id="darkModelIcon"></i>
+            </button>
+            <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()">
+                <i class="ri-search-2-line"></i>
+            </button>
+        </div>
+        <div class="copyright text-767676 dark-text-[#999]">
+            <p>&copy; 2026 <a class="text-black dark:text-white" href="Home.html">吴晶</a></p>
+        </div>
+    </header>
+
+    <header class="lg:hidden bg-white sticky top-0 z-50 dark:bg-neutral-900">
+        <div class="flex justify-between p-4">
+            <div class="logo">
+                <a href="Home.html" title="wj">
+                    <img class="w-9 h-9 rounded-full object-cover p-0.5 bg-white shadow dark:bg-neutral-800" src="images/head.jpg" alt="wj">
+                </a>
+            </div>
+            <div class="menu dark:text-[#999] space-x-3">
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleDarkMode()">
+                    <i class="ri-contrast-2-line" id="darkModelIcon"></i>
+                </button>
+                <button class="hover:text-black dark:hover:text-white" onclick="toggleSearch()">
+                    <i class="ri-search-2-line"></i>
+                </button>
+                <button onclick="toggleNav()">
+                    <i class="ri-menu-3-line"></i>
+                </button>
+            </div>
+        </div>
+        <div class="mobile-nav right-0 bg-white h-full w-full dark:bg-neutral-900" id="mobileNav" style="display: none">
+            <ul class="text-767676 space-y-6 py-6">
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="Home.html">Home</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="pages/Resume.html">Resume</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="pages/Project.html">Project</a></li>
+                <li><a class="hover:text-black block w-full hover:tracking-wider duration-300 text-center" href="pages/About.html">About</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div id="search" style="display: none" class="fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto bg-white dark:bg-neutral-900 z-50 flex justify-center content-center items-center">
+        <div class="absolute right-2 top-2">
+            <button class="text-3xl text-767676 cursor-pointer hover:text-black dark:text-[#999] dark:hover:text-white" onclick="toggleSearch()"><i class="ri-close-circle-line"></i></button>
+        </div>
+        <div class="search-wrap">
+            <form method="get" action="search.html" role="search" class="flex justify-start content-center">
+                <input autocomplete="off" class="border-b border-stone-300 dark:border-[#999] focus:outline-none focus:border-b w-full bg-transparent" type="search" name="keyword" placeholder="Search" required>
+                <button type="submit" class="dark:text-[#999] dark:hover:text-white"><i class="ri-search-2-line"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <div class="w-full h-screen lg:pl-[330px] px-[40px] lg:px-0 mt-[-60px] lg:mt-0">
+        <div class="lg:max-w-[1000px] mx-auto h-screen relative" id="homeContent">
+            <div class="flex flex-col lg:flex-row justify-center content-center items-center h-screen lg:space-x-16 lg:mx-[20px]">
+                <div class="avatar mb-6 lg:mb-0">
+                    <div class="w-72 h-72 bg-cover bg-no-repeat bg-center animation-morph" style="background-image: url('images/avatar.jpg'); box-shadow: inset 0px 0px 0px 9px rgb(255 255 255 / 30%); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;"></div>
+                </div>
+                <div class="resume space-y-6">
+                    <div class="name text-center lg:text-left">
+                        <h1 class="text-6xl subpixel-antialiased font-black font-sans dark:text-white">WJ</h1>
+                    </div>
+                    <div class="info text-center lg:text-left">
+                        <p class="text-767676">吴晶</p>
+                    </div>
+                    <div class="social hidden lg:block dark:text-767676">
+                        <ul class="flex space-x-4">
+                            <li><a href="https://github.com/wujjjj" title="GitHub" target="_blank"><i class="ri-github-line text-2xl"></i></a></li>
+                            <li><a href="https://blog.csdn.net/weixin_69782922?type=blog" title="CSDN" target="_blank"><i class="ri-code-s-slash-line text-2xl"></i></a></li>
+                            <li><a href="mailto:2099915224@qq.com" title="Email" target="_blank"><i class="ri-mail-line text-2xl"></i></a></li>
+                            <li><a href="https://space.bilibili.com/1665281675" title="Bilibili" target="_blank"><i class="ri-bilibili-line text-2xl"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mouse-cursor cursor-outer hidden lg:block"></div>
+<div class="mouse-cursor cursor-inner hidden lg:block"></div>
+
+<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js" type="application/javascript"></script>
+<script src="source/js/ion-background.js"></script>
+<script src="data/loader.js"></script>
+<script>
+    site_cursor();
+
+    function toggleNav() { $('#mobileNav').slideToggle(500); }
+
+    loadAllData()
+        .then(data => {
+            renderHomePage(data);
+        })
+        .catch(error => console.error('Error loading content:', error));
+
+    function renderHomePage(data) {
+        const profile = data.Home.profile;
+        const social = data.Home.social || [];
+        document.querySelector('.name h1').textContent = profile.name;
+        document.querySelector('.info p').textContent = `${profile.school} | ${profile.class} | ${profile.title}`;
+        document.querySelector('.social ul').innerHTML = social.map(item => `
+            <li>
+                <a href="${item.url}" title="${item.name}" target="_blank" rel="noopener noreferrer" class="hover:text-black dark:hover:text-white duration-300">
+                    <i class="${item.icon} text-2xl"></i>
+                </a>
+            </li>
+        `).join('');
+    }
+    
+    function site_cursor() {
+        const e = document.querySelector(".cursor-inner"), t = document.querySelector(".cursor-outer");
+        e.style.visibility = "visible"; t.style.visibility = "visible";
+        window.onmousemove = function(s) {
+            t.style.transform = "translate(" + s.clientX + "px, " + s.clientY + "px)";
+            e.style.transform = "translate(" + s.clientX + "px, " + s.clientY + "px)";
+        };
+        $("body").on("mouseenter", "a", function() {
+            e.classList.add("cursor-hover"); t.classList.add("cursor-hover");
+        });
+        $("body").on("mouseleave", "a, .cursor-pointer", function() {
+            $(this).is("a") && $(this).closest(".cursor-pointer").length || (e.classList.remove("cursor-hover"), t.classList.remove("cursor-hover"));
+        });
+    }
+
+    function toggleSearch() { $('#search').toggle('.2'); }
+
+    function toggleDarkMode() {
+        var dark = window.localStorage.getItem('dark');
+        dark = !dark || dark == 0 ? 1 : 0;
+        window.localStorage.setItem('dark', dark);
+        darkMode();
+    }
+
+    function darkMode() {
+        var dark = window.localStorage.getItem('dark');
+        if (!dark) return;
+        if (dark == 1) $('html').addClass('dark');
+        else $('html').removeClass('dark');
+    }
+
+    darkMode();
+
+    $(function() {
+        var url = location.href;
+        $(".nav li a").each(function() {
+            if ((url + '/').indexOf($(this).attr('href').replace('.html', '')) > -1 && $(this).attr('href').replace('.html', '') != '/') {
+                $(this).addClass('text-black dark:text-white font-semibold tracking-wide');
+            } else {
+                $(this).removeClass('text-black dark:text-white font-semibold tracking-wide');
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

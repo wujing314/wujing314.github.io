@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    .markdown-body video {
+        width: 100%;
+        height: 100%;
+    }
+
+    .markdown-body ul {
+        list-style-type: disc;
+    }
+
+    .markdown-body ol {
+        list-style-type: decimal;
+    }
+
+    .mouse-cursor {
+        position: fixed;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        border-radius: 50%;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        visibility: hidden;
+    }
+
+    .cursor-outer {
+        margin-left: -15px;
+        margin-top: -15px;
+        width: 30px;
+        height: 30px;
+        z-index: 50;
+        border: 2px solid rgba(0, 0, 0, 0.5);
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        opacity: .5;
+        -webkit-transition: all .08s ease-out;
+        transition: all .08s ease-out;
+    }
+
+    .cursor-inner {
+        margin-left: -3px;
+        margin-top: -3px;
+        width: 5px;
+        height: 5px;
+        z-index: 50;
+        background-color: rgba(0, 0, 0, 0.5);
+        -webkit-transition: width .3s ease-in-out, height .3s ease-in-out, margin .3s ease-in-out, opacity .3s ease-in-out;
+        transition: width .3s ease-in-out, height .3s ease-in-out, margin .3s ease-in-out, opacity .3s ease-in-out;
+    }
+
+    .cursor-outer.cursor-hover {
+        opacity: 0;
+    }
+
+    .cursor-inner.cursor-hover {
+        margin-left: -40px;
+        margin-top: -40px;
+        width: 80px;
+        height: 80px;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: .3;
+    }
+}
+
+@layer components {
+
+    @keyframes morph {
+        0% {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+
+        50% {
+            border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+        }
+
+        100% {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+    }
+
+    .animation-morph {
+        animation: morph 8s ease-in-out infinite 1s
+    }
+
+    .width-550px {
+        width: 550px;
+    }
+
+    .page-mqx-width {
+        @apply max-w-[1300px];
+    }
+
+    .text-767676 {
+        @apply text-[#767676];
+    }
+}

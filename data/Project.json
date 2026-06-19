@@ -1,0 +1,966 @@
+{
+    "title": "Project",
+    "description": "项目记录用于长期保存本科与研究生阶段的方案、操作步骤、问题排查、图片和附件。",
+    "categories": [
+        "全部",
+        "研究生",
+        "本科",
+        "机器人",
+        "嵌入式",
+        "自动化",
+        "视觉感知",
+        "ROS",
+        "电机控制",
+        "PCB"
+    ],
+    "posts": [
+        {
+            "id": "starfish",
+            "title": "海星五足机器人控制系统",
+            "summary": "ESP32S3 主控 + STM32F429 驱动板，面向 20 路带编码器直流电机的多足机器人控制系统。",
+            "tag": "研究生",
+            "date": "2026-06",
+            "status": "持续迭代",
+            "thumbnail": "../images/projects/starfish-main-v2.jpg",
+            "markdownFile": "../data/projects/starfish.md",
+            "attachments": [
+                {
+                    "name": "单路电机闭环测试实例",
+                    "url": "../data/project-examples/starfish-motor-test.md"
+                }
+            ],
+            "tech": [
+                "机器人",
+                "ESP32S3",
+                "STM32F429",
+                "TB6612",
+                "PCB",
+                "PID",
+                "PS2"
+            ],
+            "gallery": [
+                "../images/projects/starfish-main-v2.jpg",
+                "../images/projects/starfish-pcb-3d.png"
+            ],
+            "detail": {
+                "goal": "开发海星形态五足机器人控制系统，实现多路电机驱动、闭环控制、手柄/蓝牙/网页控制和步态扩展。",
+                "role": "负责主控与驱动板架构、PCB 迭代、焊接调试、TB6612 电机驱动、电源排查、PS2 控制和电机闭环验证。",
+                "architecture": [
+                    "ESP32S3 主控负责网页控制、指令解析和通信调度。",
+                    "STM32F429 驱动板负责 PWM、编码器读取、闭环控制和故障保护。",
+                    "TB6612 驱动多路带编码器直流电机。"
+                ],
+                "operations": [
+                    "先验证供电、下载和单路电机方向。",
+                    "读取编码器反馈并调试 PID。",
+                    "接入 PS2 手柄，验证单腿运动和基础爬行动作。"
+                ],
+                "issues": [
+                    "STM32 供电偏高会导致下载失败。",
+                    "多电机同时运行时电源压降明显。",
+                    "通信中断需要急停和心跳保护。"
+                ],
+                "next": [
+                    "五足协调步态",
+                    "翻身功率检测",
+                    "足端反馈",
+                    "运动状态可视化"
+                ]
+            }
+        },
+        {
+            "id": "pillbugs",
+            "title": "PILL_BUGS 仿生鼠妇触角粗糙度检测",
+            "summary": "基于仿生触角、压电/应变传感器、树莓派 5 和 STM32 的粗糙度识别与移动平台项目。",
+            "tag": "研究生",
+            "date": "2026-06",
+            "status": "原型验证",
+            "thumbnail": "../images/projects/pillbugs-render.png",
+            "markdownFile": "../data/projects/pillbugs.md",
+            "attachments": [
+                {
+                    "name": "粗糙度数据采集实例",
+                    "url": "../data/project-examples/pillbugs-data-record.md"
+                }
+            ],
+            "tech": [
+                "视觉感知",
+                "Raspberry Pi 5",
+                "STM32",
+                "ROS2",
+                "ADC",
+                "压电传感",
+                "应变片"
+            ],
+            "gallery": [
+                "../images/projects/pillbugs-render.png",
+                "../images/projects/pillbugs-antenna.png"
+            ],
+            "detail": {
+                "goal": "在弱视觉或无视觉环境中，通过仿生触角感知地面粗糙度，为小型移动机器人提供触觉感知能力。",
+                "role": "负责树莓派 + STM32 架构、触角传感方案、ADC 采样、底盘控制、信号处理和粗糙度识别思路。",
+                "architecture": [
+                    "树莓派 5 运行 Ubuntu/ROS2，负责上层任务和数据处理。",
+                    "STM32 负责传感器采样、电机控制和底层执行。",
+                    "触角结构采用压电片/应变片与放大电路。"
+                ],
+                "operations": [
+                    "搭建移动底盘和 STM32 通信。",
+                    "测试传感器在不同粗糙表面的响应。",
+                    "记录数据并尝试滤波、特征提取和分类。"
+                ],
+                "issues": [
+                    "应变片受结构和贴片方式影响大。",
+                    "压电片直接采样信号弱，需要调理电路。",
+                    "粗糙度识别需要稳定数据集。"
+                ],
+                "next": [
+                    "粗糙度数据集",
+                    "滤波特征",
+                    "分类模型",
+                    "感知驱动运动策略"
+                ]
+            }
+        },
+        {
+            "id": "ocean-gripper",
+            "title": "海洋专项无人装备快速布放回收夹爪",
+            "summary": "复杂风浪条件下无人装备快速布放回收技术，重点关注夹爪执行层、电机驱动与反馈保护。",
+            "tag": "研究生",
+            "date": "2026-06",
+            "status": "方案开发",
+            "thumbnail": "../images/projects/ocean-gripper.png",
+            "markdownFile": "../data/projects/ocean-gripper.md",
+            "attachments": [
+                {
+                    "name": "夹爪步进电机测试实例",
+                    "url": "../data/project-examples/ocean-gripper-stepper-test.md"
+                }
+            ],
+            "tech": [
+                "海洋装备",
+                "步进电机",
+                "STEP/DIR",
+                "限位",
+                "力反馈",
+                "夹爪控制"
+            ],
+            "gallery": [
+                "../images/projects/ocean-gripper.png"
+            ],
+            "detail": {
+                "goal": "在复杂风浪、目标漂移和平台晃动条件下，实现对 水下无人装备或跨介质无人装备的稳定抓取与回收。",
+                "role": "负责电机选型、驱动器控制、刹车/限位接口、夹爪开合逻辑和执行层保护方案。",
+                "architecture": [
+                    "上层完成目标识别、位姿估计和回收时机判断。",
+                    "控制层生成夹爪开合、锁止和释放指令。",
+                    "执行层由步进电机、驱动器、限位、刹车和力反馈组成。"
+                ],
+                "operations": [
+                    "确认电机参数、供电、电流和细分。",
+                    "使用 STEP/DIR 完成最小开环控制。",
+                    "建立脉冲数与夹爪开度的映射。"
+                ],
+                "issues": [
+                    "海况扰动会导致目标姿态变化。",
+                    "夹爪需要避免损伤目标。",
+                    "执行机构要考虑防水、防滑和机械锁止。"
+                ],
+                "next": [
+                    "位移映射",
+                    "限位保护",
+                    "夹持力反馈",
+                    "视觉任务接入"
+                ]
+            }
+        },
+        {
+            "id": "raspi-car",
+            "title": "树莓派 5 视觉小车",
+            "summary": "基于树莓派 5 的视觉小车平台，完成 Linux、ROS2、摄像头、网页控制和电机驱动基础链路。",
+            "tag": "研究生",
+            "date": "2026-05",
+            "status": "基础平台",
+            "thumbnail": "../images/projects/raspi-car.png",
+            "tech": [
+                "ROS",
+                "Raspberry Pi 5",
+                "Linux",
+                "ROS2",
+                "YOLO",
+                "Web 控制"
+            ],
+            "gallery": [
+                "../images/projects/raspi-car.png"
+            ],
+            "detail": {
+                "goal": "搭建可复用的视觉移动平台，用于验证摄像头、模型部署、电机控制和网页交互。",
+                "role": "负责系统安装、ROS2 环境、摄像头调试、Linux 电机驱动和网页控制。",
+                "architecture": [
+                    "树莓派 5 负责图像处理和上层控制。",
+                    "电机驱动负责底盘运动。",
+                    "网页端用于手动控制与调试。"
+                ],
+                "operations": [
+                    "安装系统与 ROS2 环境。",
+                    "测试摄像头和基础图像采集。",
+                    "接入电机驱动并实现网页控制。"
+                ],
+                "issues": [
+                    "摄像头和系统版本兼容性需要检查。",
+                    "视觉识别和电机控制实时性不同。",
+                    "远程调试受网络稳定性影响。"
+                ],
+                "next": [
+                    "自主巡迹",
+                    "避障",
+                    "ROS2 节点化"
+                ]
+            }
+        },
+        {
+            "id": "ros-nav",
+            "title": "ROS2 TurtleBot3 / Gazebo / Nav2 导航",
+            "summary": "跑通 Gazebo、TurtleBot3、SLAM Toolbox、Nav2、地图保存和 RViz 目标点导航流程。",
+            "tag": "研究生",
+            "date": "2026-04",
+            "status": "已跑通",
+            "thumbnail": "../images/projects/ros-nav.png",
+            "attachments": [
+                {
+                    "name": "ROS2 Nav2 跑通实例",
+                    "url": "../data/project-examples/ros-nav-runbook.md"
+                }
+            ],
+            "tech": [
+                "ROS",
+                "ROS Jazzy",
+                "Gazebo",
+                "TurtleBot3",
+                "SLAM Toolbox",
+                "Nav2"
+            ],
+            "gallery": [
+                "../images/projects/ros-nav.png"
+            ],
+            "detail": {
+                "goal": "理解 ROS2 导航栈基本流程，为真实移动机器人导航迁移打基础。",
+                "role": "负责环境安装、仿真启动、SLAM 建图、地图保存和 Nav2 目标点导航验证。",
+                "architecture": [
+                    "Gazebo 提供仿真环境。",
+                    "TurtleBot3 提供机器人模型。",
+                    "SLAM Toolbox 建图，Nav2 完成定位和导航。"
+                ],
+                "operations": [
+                    "启动 TurtleBot3 仿真世界。",
+                    "启动 SLAM Toolbox 建图。",
+                    "保存地图并用 Nav2 设置目标点导航。"
+                ],
+                "issues": [
+                    "模型路径和环境变量需要正确。",
+                    "初始位姿不准会影响导航。",
+                    "use_sim_time 需要保持一致。"
+                ],
+                "next": [
+                    "迁移到真实小车",
+                    "融合视觉和雷达",
+                    "局部避障调参"
+                ]
+            }
+        },
+        {
+            "id": "foc-motor-control",
+            "title": "FOC 永磁同步电机控制课程设计",
+            "summary": "围绕永磁同步电机 FOC 控制、速度/电流闭环、驱动调试和课程设计展示完成的电机控制项目。",
+            "tag": "本科",
+            "date": "2024",
+            "status": "课程设计",
+            "thumbnail": "../images/projects/undergrad-foc.jpg",
+            "tech": [
+                "电机控制",
+                "FOC",
+                "PMSM",
+                "PID",
+                "课程设计"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-foc.jpg"
+            ],
+            "detail": {
+                "goal": "理解永磁同步电机矢量控制流程，完成基础闭环控制和课程设计展示。",
+                "role": "负责方案整理、控制流程理解、调试记录和展示材料整理。",
+                "architecture": [
+                    "电机驱动层负责三相逆变输出。",
+                    "控制层完成坐标变换、速度环和电流环。",
+                    "调试层观察波形、速度响应和控制效果。"
+                ],
+                "operations": [
+                    "确认电机和驱动器参数。",
+                    "梳理 FOC 控制流程。",
+                    "记录速度、电流和波形变化。"
+                ],
+                "issues": [
+                    "参数不准会导致启动不稳。",
+                    "速度环和电流环需要分层调试。",
+                    "课程设计展示需要把控制流程讲清楚。"
+                ],
+                "next": [
+                    "补充实验曲线",
+                    "整理控制框图",
+                    "完善参数表"
+                ]
+            }
+        },
+        {
+            "id": "pcb-practice",
+            "title": "PCB 电路设计与打样实践",
+            "summary": "基于多张 PCB 设计图和实物图，整理本科阶段电路设计、PCB 绘制、打样与焊接调试经历。",
+            "tag": "本科",
+            "date": "2024",
+            "status": "实践积累",
+            "thumbnail": "../images/projects/undergrad-pcb.png",
+            "tech": [
+                "PCB",
+                "嘉立创EDA",
+                "电路设计",
+                "焊接",
+                "调试"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-pcb.png"
+            ],
+            "detail": {
+                "goal": "掌握从原理图、PCB 布局布线到焊接调试的完整硬件制作流程。",
+                "role": "负责电路绘制、PCB 设计、打样检查和焊接调试。",
+                "architecture": [
+                    "原理图定义电源、主控、接口和外设。",
+                    "PCB 进行布局、走线和接口约束。",
+                    "实物焊接后进行供电与功能验证。"
+                ],
+                "operations": [
+                    "先画原理图并检查封装。",
+                    "布局电源、主控和接口区域。",
+                    "打样后先查短路，再上电测试。"
+                ],
+                "issues": [
+                    "封装错误会直接影响焊接。",
+                    "电源线宽和地线处理会影响稳定性。",
+                    "接口方向需要和外壳/线束匹配。"
+                ],
+                "next": [
+                    "整理不同 PCB 版本",
+                    "补充错误案例",
+                    "形成设计检查清单"
+                ]
+            }
+        },
+        {
+            "id": "plc-automation",
+            "title": "PLC 自动化控制系统合集",
+            "summary": "包含三层/十层电梯、病房呼叫、停车场、自动售货机等 PLC 控制项目。",
+            "tag": "本科",
+            "date": "2024",
+            "status": "竞赛与课程项目",
+            "thumbnail": "../images/projects/undergrad-plc-elevator.jpg",
+            "tech": [
+                "自动化",
+                "PLC",
+                "TIA Portal",
+                "SCL",
+                "LAD",
+                "WINCC",
+                "电梯控制"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-plc-elevator.jpg"
+            ],
+            "detail": {
+                "goal": "通过电梯、病房呼叫、停车场和自动售货机等项目训练 PLC 顺序控制、状态机和人机界面设计。",
+                "role": "负责 PLC 程序逻辑、状态切换、按钮/传感器输入处理和部分 HMI/WinCC 展示。",
+                "architecture": [
+                    "输入层包括按钮、传感器和限位信号。",
+                    "PLC 逻辑层完成状态机、互锁和安全判断。",
+                    "输出层控制电机、指示灯、报警和界面显示。"
+                ],
+                "operations": [
+                    "先列出输入输出表。",
+                    "用状态机拆分运行流程。",
+                    "逐步仿真按钮、传感器和异常状态。"
+                ],
+                "issues": [
+                    "顺序控制容易漏掉异常状态。",
+                    "互锁逻辑需要避免同时动作。",
+                    "HMI 显示要和 PLC 状态保持一致。"
+                ],
+                "next": [
+                    "整理梯形图截图",
+                    "补充 WinCC 画面",
+                    "归档比赛版本"
+                ]
+            }
+        },
+        {
+            "id": "edc-smart-car",
+            "title": "全国大学生电子设计竞赛智能小车",
+            "summary": "基于 MSPM0 开发板完成智能车软硬件设计，实现赛题要求并获得省一等奖。",
+            "tag": "本科",
+            "date": "2024",
+            "status": "省一等奖",
+            "thumbnail": "../images/projects/undergrad-edc-car.jpg",
+            "tech": [
+                "机器人",
+                "MSPM0",
+                "智能车",
+                "灰度传感器",
+                "PID",
+                "电赛"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-edc-car.jpg"
+            ],
+            "detail": {
+                "goal": "在电赛限时条件下完成智能小车控制系统，实现循迹、任务执行和稳定运行。",
+                "role": "负责快速学习 MSPM0 平台、底层驱动、任务逻辑、传感器调试和软件联调。",
+                "architecture": [
+                    "MSPM0 主控负责任务调度。",
+                    "灰度传感器用于路径识别。",
+                    "电机驱动与 PID 控制底盘运动。"
+                ],
+                "operations": [
+                    "搭建 Keil/SysConfig 工程。",
+                    "调试灰度传感器与电机 PWM。",
+                    "实现任务状态机和 PID 参数调节。"
+                ],
+                "issues": [
+                    "比赛时间短，需要快速定位问题。",
+                    "传感器阈值受环境光影响。",
+                    "底盘速度与稳定性需要平衡。"
+                ],
+                "next": [
+                    "整理赛题代码说明",
+                    "补充调参记录",
+                    "归档硬件原理图"
+                ]
+            }
+        },
+        {
+            "id": "engineering-robot-car",
+            "title": "六轴机械臂工程车 / 毕业设计",
+            "summary": "RobotMaster 方向工程车与毕业设计项目，涉及 STM32、CAN 电调、多电机控制、机械臂、吸盘和自定义遥控器。",
+            "tag": "本科",
+            "date": "2025",
+            "status": "毕业设计 / 竞赛项目",
+            "thumbnail": "../images/projects/undergrad-engineering-car.jpg",
+            "tech": [
+                "机器人",
+                "STM32F427",
+                "FreeRTOS",
+                "CAN",
+                "机械臂",
+                "自定义遥控器"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-engineering-car.jpg"
+            ],
+            "detail": {
+                "goal": "完成六轴机械臂工程车控制系统，实现底盘、机械臂、吸盘和自定义遥控器协同控制。",
+                "role": "负责工程车软件开发、遥控器控制方案、底盘/机械臂任务拆分和系统联调。",
+                "architecture": [
+                    "底盘任务负责移动与旋转。",
+                    "机械臂任务负责升降、平移、旋转和吸盘姿态。",
+                    "遥控器通过模式切换控制不同执行机构。"
+                ],
+                "operations": [
+                    "拆分底盘、机械臂、吸盘和通信任务。",
+                    "定义遥控器按键与拨杆映射。",
+                    "逐个验证动作，再做组合动作联调。"
+                ],
+                "issues": [
+                    "多执行机构同时动作时逻辑容易冲突。",
+                    "遥控器模式切换需要清晰反馈。",
+                    "机械臂动作要避免超限和误操作。"
+                ],
+                "next": [
+                    "整理毕业设计文档",
+                    "补充控制流程图",
+                    "归档遥控器映射表"
+                ]
+            }
+        },
+        {
+            "id": "industry-innovation-car",
+            "title": "工创赛智能送货车 / 物流车",
+            "summary": "面向工创赛和物流任务的智能送货车项目，涉及移动平台、任务执行和视觉/传感器辅助。",
+            "tag": "本科",
+            "date": "2024",
+            "status": "竞赛项目",
+            "thumbnail": "../images/projects/undergrad-industry.jpg",
+            "tech": [
+                "机器人",
+                "智能送货车",
+                "物流车",
+                "传感器",
+                "运动控制"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-industry.jpg"
+            ],
+            "detail": {
+                "goal": "完成面向物流/送货任务的移动平台，实现路径运动、任务执行和展示。",
+                "role": "参与方案设计、车体调试、运动控制和比赛展示材料整理。",
+                "architecture": [
+                    "底盘负责移动与定位。",
+                    "传感器用于环境和任务状态判断。",
+                    "上层任务逻辑负责送货流程。"
+                ],
+                "operations": [
+                    "确认比赛任务和动作流程。",
+                    "调试底盘运动和执行机构。",
+                    "录制演示视频并整理展示材料。"
+                ],
+                "issues": [
+                    "比赛场地差异会影响识别和运动。",
+                    "任务流程需要容错。",
+                    "车体稳定性影响最终展示效果。"
+                ],
+                "next": [
+                    "补充任务流程图",
+                    "整理视频截图",
+                    "完善问题记录"
+                ]
+            }
+        },
+        {
+            "id": "qt-client",
+            "title": "Qt 桌面客户端与上位机界面",
+            "summary": "基于 Qt 的桌面客户端/上位机界面实践，用于训练界面开发、数据展示和设备交互。",
+            "tag": "本科",
+            "date": "2024",
+            "status": "软件实践",
+            "thumbnail": "../images/projects/undergrad-qt.jpg",
+            "tech": [
+                "Qt",
+                "C++",
+                "上位机",
+                "界面开发",
+                "串口通信"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-qt.jpg"
+            ],
+            "detail": {
+                "goal": "掌握 Qt 桌面界面开发，为设备控制、数据展示和串口交互打基础。",
+                "role": "负责界面设计、控件布局、基础交互和数据展示逻辑。",
+                "architecture": [
+                    "界面层负责输入、按钮和数据显示。",
+                    "通信层可扩展串口/网络接口。",
+                    "业务层处理控制命令和状态更新。"
+                ],
+                "operations": [
+                    "搭建 Qt 工程。",
+                    "完成基本控件布局。",
+                    "设计数据刷新和按钮事件。"
+                ],
+                "issues": [
+                    "界面布局需要适配不同窗口大小。",
+                    "串口数据需要防止阻塞界面。",
+                    "状态显示要和设备反馈一致。"
+                ],
+                "next": [
+                    "接入真实硬件",
+                    "补充串口协议",
+                    "整理 UI 截图"
+                ]
+            }
+        },
+        {
+            "id": "ros-arm-vision",
+            "title": "ROS 机械臂 + 视觉识别实践",
+            "summary": "基于 ROS、机械臂和视觉识别的综合实践，用于理解感知、运动规划和执行控制链路。",
+            "tag": "本科",
+            "date": "2024",
+            "status": "综合实践",
+            "thumbnail": "../images/projects/undergrad-ros-arm-vision.png",
+            "tech": [
+                "ROS",
+                "机械臂",
+                "机器视觉",
+                "OpenCV",
+                "运动控制"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-ros-arm-vision.png"
+            ],
+            "detail": {
+                "goal": "把视觉识别结果和机械臂执行控制联系起来，理解机器人感知-决策-执行流程。",
+                "role": "参与环境搭建、视觉识别测试、机械臂控制流程和演示记录。",
+                "architecture": [
+                    "视觉模块负责目标检测。",
+                    "ROS 节点负责信息传递。",
+                    "机械臂控制模块负责执行动作。"
+                ],
+                "operations": [
+                    "启动 ROS 环境和机械臂节点。",
+                    "测试摄像头和视觉识别。",
+                    "将识别结果转为机械臂动作指令。"
+                ],
+                "issues": [
+                    "相机坐标与机械臂坐标需要标定。",
+                    "识别误差会影响抓取或指向。",
+                    "节点通信需要保持稳定。"
+                ],
+                "next": [
+                    "补充标定流程",
+                    "完善抓取策略",
+                    "整理演示视频"
+                ]
+            }
+        },
+        {
+            "id": "waveform-generator",
+            "title": "多功能波形发生器",
+            "summary": "基于单片机/电路课程实践的多功能波形发生器项目，实现波形输出、参数调节和显示。",
+            "tag": "本科",
+            "date": "2023",
+            "status": "课程项目",
+            "thumbnail": "../images/projects/undergrad-waveform.jpg",
+            "tech": [
+                "嵌入式",
+                "DAC",
+                "波形发生器",
+                "按键",
+                "显示"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-waveform.jpg"
+            ],
+            "detail": {
+                "goal": "实现常见波形输出与参数调节，训练 DAC、定时器、按键和显示模块综合使用。",
+                "role": "负责程序逻辑、波形输出、参数切换和调试记录。",
+                "architecture": [
+                    "定时器控制采样输出节奏。",
+                    "DAC 或 PWM 输出波形。",
+                    "按键/显示模块用于参数设置。"
+                ],
+                "operations": [
+                    "生成正弦、方波等基础波形表。",
+                    "设置定时器输出频率。",
+                    "用按键调整频率和幅值。"
+                ],
+                "issues": [
+                    "采样点数影响波形平滑度。",
+                    "输出频率受定时器和程序效率影响。",
+                    "按键需要消抖。"
+                ],
+                "next": [
+                    "补充波形截图",
+                    "整理参数范围",
+                    "记录硬件连接"
+                ]
+            }
+        },
+        {
+            "id": "electronic-piano",
+            "title": "单片机电子琴",
+            "summary": "通过按键、蜂鸣器/音频输出和显示模块实现基础电子琴功能。",
+            "tag": "本科",
+            "date": "2023",
+            "status": "课程项目",
+            "thumbnail": "../images/projects/undergrad-piano.jpg",
+            "tech": [
+                "嵌入式",
+                "单片机",
+                "定时器",
+                "蜂鸣器",
+                "按键"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-piano.jpg"
+            ],
+            "detail": {
+                "goal": "训练单片机定时器、按键扫描和音调输出。",
+                "role": "负责按键扫描、频率表、音调输出和基础调试。",
+                "architecture": [
+                    "按键输入选择音符。",
+                    "定时器产生不同频率。",
+                    "蜂鸣器输出对应音调。"
+                ],
+                "operations": [
+                    "建立音符频率表。",
+                    "扫描按键并映射音调。",
+                    "调试不同音阶的输出效果。"
+                ],
+                "issues": [
+                    "按键抖动会导致音符重复触发。",
+                    "频率误差会影响音准。",
+                    "多键输入需要定义优先级。"
+                ],
+                "next": [
+                    "补充曲谱播放",
+                    "加入显示界面",
+                    "优化按键手感"
+                ]
+            }
+        },
+        {
+            "id": "balance-car",
+            "title": "两轮平衡车",
+            "summary": "基于姿态传感器、电机驱动和闭环控制的两轮平衡车实践。",
+            "tag": "本科",
+            "date": "2023",
+            "status": "实践项目",
+            "thumbnail": "../images/projects/undergrad-balance-car.jpg",
+            "tech": [
+                "机器人",
+                "MPU",
+                "PID",
+                "电机控制",
+                "姿态解算"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-balance-car.jpg"
+            ],
+            "detail": {
+                "goal": "通过两轮平衡车理解姿态检测、反馈控制和电机驱动。",
+                "role": "负责姿态传感器读取、PID 调参和电机输出测试。",
+                "architecture": [
+                    "MPU 采集角度/角速度。",
+                    "控制算法计算目标 PWM。",
+                    "电机驱动维持车体平衡。"
+                ],
+                "operations": [
+                    "校准 MPU 零点。",
+                    "读取姿态角并滤波。",
+                    "逐步调节 PID 参数。"
+                ],
+                "issues": [
+                    "机械重心影响控制难度。",
+                    "PID 参数过大容易震荡。",
+                    "电池电压变化会影响输出。"
+                ],
+                "next": [
+                    "整理调参曲线",
+                    "加入遥控控制",
+                    "优化结构稳定性"
+                ]
+            }
+        },
+        {
+            "id": "monitoring-systems",
+            "title": "人体监测与设备监测系统",
+            "summary": "围绕传感器采集、状态显示和报警逻辑的人体监测/设备监测类项目。",
+            "tag": "本科",
+            "date": "2023",
+            "status": "传感器项目",
+            "thumbnail": "../images/projects/undergrad-human-monitor.jpg",
+            "tech": [
+                "嵌入式",
+                "传感器",
+                "显示",
+                "报警",
+                "数据采集"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-human-monitor.jpg",
+                "../images/projects/undergrad-device-monitor.jpg"
+            ],
+            "detail": {
+                "goal": "训练多传感器采集、阈值判断、状态显示和报警输出。",
+                "role": "负责传感器接入、采集逻辑、显示与报警功能。",
+                "architecture": [
+                    "传感器层采集人体或设备状态。",
+                    "单片机处理阈值和状态。",
+                    "显示/报警层输出结果。"
+                ],
+                "operations": [
+                    "确认传感器接口和供电。",
+                    "读取原始数据并做阈值判断。",
+                    "加入显示和报警逻辑。"
+                ],
+                "issues": [
+                    "传感器噪声需要滤波。",
+                    "阈值需要结合实际场景调整。",
+                    "报警逻辑要避免频繁误触发。"
+                ],
+                "next": [
+                    "补充数据曲线",
+                    "整理传感器参数",
+                    "扩展联网记录"
+                ]
+            }
+        },
+        {
+            "id": "smart-light",
+            "title": "智能灯与简易 App 控制",
+            "summary": "围绕智能灯、简易 App 和物联网控制的入门项目，探索设备联网和远程控制。",
+            "tag": "本科",
+            "date": "2023",
+            "status": "物联网项目",
+            "thumbnail": "../images/projects/undergrad-smart-light.jpg",
+            "tech": [
+                "嵌入式",
+                "ESP",
+                "物联网",
+                "App",
+                "WiFi",
+                "远程控制"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-smart-light.jpg"
+            ],
+            "detail": {
+                "goal": "实现智能灯控制和简易 App 交互，理解物联网设备连接、控制和状态反馈。",
+                "role": "负责设备端控制逻辑、通信调试和基础 App/网页控制尝试。",
+                "architecture": [
+                    "设备端负责灯光控制。",
+                    "网络通信负责接收控制命令。",
+                    "App/网页端用于交互。"
+                ],
+                "operations": [
+                    "搭建设备端控制程序。",
+                    "连接 WiFi 或本地通信。",
+                    "通过 App/网页发送控制指令。"
+                ],
+                "issues": [
+                    "联网稳定性影响体验。",
+                    "状态反馈要和实际灯光一致。",
+                    "控制协议需要保持简单清晰。"
+                ],
+                "next": [
+                    "补充控制协议",
+                    "加入亮度调节",
+                    "整理 App 演示"
+                ]
+            }
+        },
+        {
+            "id": "three-phase-motor",
+            "title": "三相异步电动机闭环控制",
+            "summary": "围绕三相异步电机控制、闭环调速和电机实验展开的自动化控制项目。",
+            "tag": "本科",
+            "date": "2024",
+            "status": "课程/实验项目",
+            "thumbnail": "../images/projects/undergrad-three-phase.jpg",
+            "tech": [
+                "电机控制",
+                "三相异步电机",
+                "闭环控制",
+                "调速",
+                "自动化"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-three-phase.jpg"
+            ],
+            "detail": {
+                "goal": "理解三相异步电动机调速与闭环控制基本流程。",
+                "role": "负责实验记录、控制逻辑整理和结果展示。",
+                "architecture": [
+                    "驱动层控制电机运行。",
+                    "反馈层采集速度或状态。",
+                    "控制层根据反馈调节输出。"
+                ],
+                "operations": [
+                    "确认电机参数和接线。",
+                    "运行开环控制并观察状态。",
+                    "加入反馈形成闭环调节。"
+                ],
+                "issues": [
+                    "电机实验需注意安全。",
+                    "反馈信号稳定性影响闭环效果。",
+                    "参数调节需要逐步进行。"
+                ],
+                "next": [
+                    "补充实验曲线",
+                    "整理控制框图",
+                    "记录参数表"
+                ]
+            }
+        },
+        {
+            "id": "proteus-simulations",
+            "title": "Proteus 数模/模数转换与计算器仿真",
+            "summary": "基于 Proteus 的数模转换、模数转换、计算器等电路与单片机仿真实践。",
+            "tag": "本科",
+            "date": "2023",
+            "status": "仿真实践",
+            "thumbnail": "../images/projects/undergrad-proteus-ad-da.png",
+            "tech": [
+                "Proteus",
+                "ADC",
+                "DAC",
+                "单片机",
+                "仿真"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-proteus-ad-da.png"
+            ],
+            "detail": {
+                "goal": "通过仿真理解 ADC/DAC、按键输入、显示输出和基础电路逻辑。",
+                "role": "负责仿真电路搭建、程序调试和结果截图整理。",
+                "architecture": [
+                    "输入层包含按键或模拟信号。",
+                    "单片机处理转换和逻辑。",
+                    "显示/输出层展示计算或转换结果。"
+                ],
+                "operations": [
+                    "搭建 Proteus 仿真电路。",
+                    "编写单片机程序。",
+                    "运行仿真并观察结果。"
+                ],
+                "issues": [
+                    "仿真器件参数要匹配程序。",
+                    "显示模块接线容易出错。",
+                    "ADC/DAC 标定需要注意参考电压。"
+                ],
+                "next": [
+                    "补充仿真文件",
+                    "整理实验步骤",
+                    "扩展真实硬件验证"
+                ]
+            }
+        },
+        {
+            "id": "csdn-open-source",
+            "title": "CSDN 开源与学习笔记整理",
+            "summary": "围绕嵌入式、物联网、自动化和个人项目的开源记录与学习笔记整理。",
+            "tag": "本科",
+            "date": "2024",
+            "status": "长期记录",
+            "thumbnail": "../images/projects/undergrad-csdn-open.png",
+            "tech": [
+                "CSDN",
+                "开源",
+                "文档",
+                "学习笔记",
+                "项目归档"
+            ],
+            "gallery": [
+                "../images/projects/undergrad-csdn-open.png"
+            ],
+            "detail": {
+                "goal": "把学习过程、项目代码、调试经验和资料整理成可复盘的公开记录。",
+                "role": "负责文章整理、项目截图、代码说明和资料归档。",
+                "architecture": [
+                    "项目截图展示结果。",
+                    "文章记录步骤与问题。",
+                    "代码或资料链接用于复现。"
+                ],
+                "operations": [
+                    "整理项目结构和关键截图。",
+                    "记录实现步骤和问题。",
+                    "发布到 CSDN 或个人博客。"
+                ],
+                "issues": [
+                    "文章需要避免只放结果。",
+                    "代码说明要清楚依赖和运行环境。",
+                    "资料归档要保持路径稳定。"
+                ],
+                "next": [
+                    "补充项目索引",
+                    "整理旧项目源码",
+                    "同步到个人网站 Project 页面"
+                ]
+            }
+        }
+    ]
+}
